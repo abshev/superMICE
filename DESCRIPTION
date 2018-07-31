@@ -1,0 +1,18 @@
+Package: superMICE
+Type: Package
+Title: SuperLearner Method for MICE
+Version: 0.1.0
+Author: Aaron B. Shev
+Maintainer: Aaron B. Shev <abshev@ucdavis.edu>
+Description: This humble package adds a Super Learner ensemble model method using 
+    either the SuperLearner package or H2O to the mice package for multiple imputation.
+Imports:
+    mice,
+    SuperLearner,
+    h2o
+Suggests:
+    randomforest,
+    earth
+License: GPL-3.0
+Encoding: UTF-8
+LazyData: true

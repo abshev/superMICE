@@ -1,29 +1,23 @@
-library(mice)
-library(lattice)
-library(Metrics)
-library(SuperLearner)
-library(parallel)
-library(h2o)
-
-
+require(mice)
+require(SuperLearner)
 
 
 mice.impute.SuperLearner = function(y, ry, x, ...){
   args = list(...)
-  if(is.null(args$cvControl)){
-    cvControl = list(V = 5L)
-  }
-  else{
-    cvControl = args$cvControl
-    args$cvControl = NULL
-  }
-  if(is.null(args$parallel)){
-    parallel = "seq"
-  }
-  else{
-    parallel = args$parallel
-    args$parallel = NULL
-  }
+  # if(is.null(args$cvControl)){
+  #   cvControl = list(V = 5L)
+  # }
+  # else{
+  #   cvControl = args$cvControl
+  #   args$cvControl = NULL
+  # }
+  # if(is.null(args$parallel)){
+  #   parallel = "seq"
+  # }
+  # else{
+  #   parallel = args$parallel
+  #   args$parallel = NULL
+  # }
 
   newdata <- data.frame(x[!ry,])
   names(newdata) = names(x)
@@ -50,21 +44,21 @@ mice.impute.SuperLearner = function(y, ry, x, ...){
     }
   }
   else if(class(y) == "numeric"){
-    if(!is.null(args$h20) && args$h2o){
+    if(!is.null(args$h2o) && args$h2o){
       namesArgs = names(args)
       namesh2o = names(formals(h2o.init))
-      formals(h2o.init)[intersect(namesArgs, namesh2o)] <-
-        args[intersect(namesArgs, namesh2o)]
+      formals(h2o.init)[intersect(namesArgs, namesh2o)] <- args[
+        intersect(namesArgs, namesh2o)]
       h2o.init()
-      formals(h2o.stackedEnsemble) <- args[names(args) %in%
-                                             names(formals(h2o.stackedEnsemble))]
+      formals(h2o.stackedEnsemble) <- args[
+        names(args) %in% names(formals(h2o.stackedEnsemble))]
       sl <- h2o.stackedEnsemble()
     }
     else{
       namesArgs = names(args)
       namesSL = names(formals(SuperLearner))
-      formals(SuperLearner)[intersect(namesArgs, namesSL)] <-
-        args[intersect(namesArgs, namesSL)]
+      formals(SuperLearner)[intersect(namesArgs, namesSL)] <- args[
+        intersect(namesArgs, namesSL)]
       sl = SuperLearner(Y = Y, X = X, family = "gaussian")
       mu <- predict(object = sl, newdata = newdata, X = X, Y = Y, TRUE)$pred
       if(!is.null(args$CV) && args$CV){
@@ -84,5 +78,5 @@ mice.impute.SuperLearner = function(y, ry, x, ...){
     stop("Invalid data type for Super Learner Imputation.  Use only numeric
          or factors with two levels.")
   }
-  }
+}
 
