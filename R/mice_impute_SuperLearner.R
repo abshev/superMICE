@@ -1,8 +1,56 @@
-require(mice)
-require(SuperLearner)
+#' SuperLearner method of MICE.
+#'
+#' superlearns for mice
+#'
+#' @param y Vector to be imputed
+#' @param ry Logical vector of length length(y) indicating the the subset y[ry]
+#' of elements in y to which the imputation model is fitted. The ry generally
+#' distinguishes the observed (TRUE) and missing values (FALSE) in y.
+#' @param x Numeric design matrix with length(y) rows with predictors for y.
+#' Matrix x may have no missing values.
+#' @param wy Logical vector of length length(y). A TRUE value indicates
+#' locations in y for which imputations are created.
+#' @param SL.library For SuperLearner: Either a character vector of prediction
+#' algorithms or list containing character vectors as specified by the
+#' SuperLearner package.  For h2o, a named list of character vectors specifying
+#' prediction algorithms and arguments to be passed to h2o.  See details below
+#' for examples on the structure.
+#' @param SuperLearnerPackage Backend to fit the SuperLearner models.  Must be
+#' one of "SuperLearner" or "h2o".
+#' @param ... Further arguments passed to SuperLearner or h2o.
+#' @return Vector with imputed data, same type as y, and of length sum(wy)
+#'
+#' @examples
+#'   n <- 1000
+#'   X1 = runif(n, min = -3, max = 3)
+#'   X2 = X1^2 + rnorm(n, mean = 0, sd = 1)
+#'   error <- rnorm(n, mean=0, sd = 1)
+#'   Y <- X1 + X2 + error
+#'   f <- ecdf(X1)
+#'   x2 <- ifelse(runif(X2) < (f(X1) * 2 * pmissing), NA, X2)
+#'   x1 <- ifelse(runif(X1) < .2, NA, X1)
+#'   y <- ifelse(runif(Y) < .2, NA, Y)
+#'   data <- as.data.frame(cbind(y, x1, x2))
+#'   SL.lib <- c("SL.glm", "SL.glm.interaction", "SL.mean", "SL.polymars")
+#'   imp.SL<- mice(data, m = 5, method = "SuperLearner",
+#'                  print = TRUE, SL.library = SL.lib, CV = TRUE)
 
 
-mice.impute.SuperLearner = function(y, ry, x, ...){
+mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
+                                    SuperLearnerPackage = c("SuperLearner",
+                                                            "h2o"),  ...){
+  SuperLearnerPackage = match.arg(SuperLearnerPackage)
+  if(SuperLearnerPackage == "SuperLearner"){
+    if(!require(SuperLearner)){stop('SuperLearner is not installed.')}
+  }
+  else if(SuperLearnerPackage == "h2o"){
+    if(!require(h2o)){stop('h2o is not installed.')}
+  }
+
+  if (is.null(wy)){
+    wy <- !ry
+  }
+
   args = list(...)
   # if(is.null(args$cvControl)){
   #   cvControl = list(V = 5L)
@@ -19,12 +67,12 @@ mice.impute.SuperLearner = function(y, ry, x, ...){
   #   args$parallel = NULL
   # }
 
-  newdata <- data.frame(x[!ry,])
+  newdata <- data.frame(x[wy,])
   names(newdata) = names(x)
 
-  X <- data.frame(x[ry,])
+  X <- data.frame(x[!wy,])
   names(X) = names(x)
-  Y <- y[ry]
+  Y <- y[!wy]
 
   if(length(unique(y)) == 2){
     if(!is.null(args$h2o) && args$h2o){
@@ -69,7 +117,7 @@ mice.impute.SuperLearner = function(y, ry, x, ...){
         sd = sqrt(summary(cv.sl)$Table$Ave[1])
       }
       else{
-        sd <- sqrt(mean((sl$SL.predict - y[ry])^2))
+        sd <- sqrt(mean((sl$SL.predict - y[!wy])^2))
       }
       rnorm(length(mu), mu, sd)
     }
