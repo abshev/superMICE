@@ -1,6 +1,8 @@
-#' SuperLearner method of MICE.
+#' SuperLearner method for \code{mice} package.
 #'
-#' superlearns for mice
+#' Method for the \code{mice} package that uses SuperLearner as the predctive
+#' algorithm.  This is done through a backend powered by either the
+#' \code{SuperLearner} package or H2O.
 #'
 #' @param y Vector to be imputed
 #' @param ry Logical vector of length length(y) indicating the the subset y[ry]
@@ -15,9 +17,9 @@
 #' SuperLearner package.  For h2o, a named list of character vectors specifying
 #' prediction algorithms and arguments to be passed to h2o.  See details below
 #' for examples on the structure.
-#' @param SuperLearnerPackage Backend to fit the SuperLearner models.  Must be
+#' @param SLbackend Backend to fit the SuperLearner models.  Must be
 #' one of "SuperLearner" or "h2o".
-#' @param ... Further arguments passed to SuperLearner or h2o.
+#' @param ... Further arguments passed to \code{SuperLearner} or \code{h2o}.
 #' @return Vector with imputed data, same type as y, and of length sum(wy)
 #'
 #' @examples
@@ -36,16 +38,15 @@
 #'                  print = TRUE, SL.library = SL.lib, CV = TRUE)
 
 
-mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
-                                    SuperLearnerPackage = c("SuperLearner",
-                                                            "h2o"),  ...){
-  SuperLearnerPackage = match.arg(SuperLearnerPackage)
+mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library, SLbackend = c("SuperLearner", "h2o"),  ...){
+  SuperLearnerPackage = match.arg(SLbackend)
   if(SuperLearnerPackage == "SuperLearner"){
     if(!require(SuperLearner)){stop('SuperLearner is not installed.')}
   }
   else if(SuperLearnerPackage == "h2o"){
     if(!require(h2o)){stop('h2o is not installed.')}
   }
+  else{stop('Super Learner backend not supported.')}
 
   if (is.null(wy)){
     wy <- !ry
@@ -68,14 +69,14 @@ mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
   # }
 
   newdata <- data.frame(x[wy,])
-  names(newdata) = names(x)
+  names(newdata) = sapply(1:ncol(newdata), function(n){paste0("x", n)})
 
   X <- data.frame(x[!wy,])
-  names(X) = names(x)
+  names(X) = sapply(1:ncol(newdata), function(n){paste0("x", n)})
   Y <- y[!wy]
 
   if(length(unique(y)) == 2){
-    if(!is.null(args$h2o) && args$h2o){
+    if(SuperLearnerPackage == "h2o"){
       formals(h2o.init) <- args[names(args) %in% names(formals(h2o.init))]
       h2o.init()
       formals(h2o.stackedEnsemble) <- args[names(args) %in%
@@ -107,13 +108,15 @@ mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
       namesSL = names(formals(SuperLearner))
       formals(SuperLearner)[intersect(namesArgs, namesSL)] <- args[
         intersect(namesArgs, namesSL)]
-      sl = SuperLearner(Y = Y, X = X, family = "gaussian")
+      sl = SuperLearner(Y = Y, X = X, family = "gaussian",
+                        SL.library = SL.library)
       mu <- predict(object = sl, newdata = newdata, X = X, Y = Y, TRUE)$pred
       if(!is.null(args$CV) && args$CV){
         namesCVSL = names(formals(CV.SuperLearner))
         formals(CV.SuperLearner)[intersect(namesArgs, namesCVSL)] <-
           args[intersect(namesArgs, namesCVSL)]
-        cv.sl = CV.SuperLearner(Y = Y, X = X, family = "gaussian")
+        cv.sl = CV.SuperLearner(Y = Y, X = X, family = "gaussian",
+                                SL.library = SL.library)
         sd = sqrt(summary(cv.sl)$Table$Ave[1])
       }
       else{
@@ -127,4 +130,6 @@ mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
          or factors with two levels.")
   }
 }
+
+# h2oDefaults = function()
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/mice_impute_SuperLearner.R
 \name{mice.impute.SuperLearner}
 \alias{mice.impute.SuperLearner}
-\title{SuperLearner method of MICE.}
+\title{SuperLearner method for \code{mice} package.}
 \usage{
 mice.impute.SuperLearner(y, ry, x, wy = NULL, SL.library,
   SuperLearnerPackage = c("SuperLearner", "h2o"), ...)
