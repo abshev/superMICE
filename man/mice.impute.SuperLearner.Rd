@@ -4,8 +4,18 @@
 \alias{mice.impute.SuperLearner}
 \title{SuperLearner method for \code{mice} package.}
 \usage{
-mice.impute.SuperLearner(y, ry, x, wy = NULL, SL.library,
-  SuperLearnerPackage = c("SuperLearner", "h2o"), ...)
+mice.impute.SuperLearner(
+  y,
+  ry,
+  x,
+  wy = NULL,
+  SL.library,
+  SL.CV = TRUE,
+  imputation.method = c("regression", "PMM"),
+  SL.backend = c("SuperLearner", "h2o"),
+  donors = 5L,
+  ...
+)
 }
 \arguments{
 \item{y}{Vector to be imputed}
@@ -26,29 +36,43 @@ SuperLearner package.  For h2o, a named list of character vectors specifying
 prediction algorithms and arguments to be passed to h2o.  See details below
 for examples on the structure.}
 
-\item{SuperLearnerPackage}{Backend to fit the SuperLearner models.  Must be
+\item{SL.CV}{Logical.  If true cv.SuperLearner is used to estimate the risk.}
+
+\item{imputation.method}{Method used to randomly generate imputed values.
+Must be one of "Regression" or "PMM".}
+
+\item{SL.backend}{Backend to fit the SuperLearner models.  Must be
 one of "SuperLearner" or "h2o".}
 
-\item{...}{Further arguments passed to SuperLearner or h2o.}
+\item{donors}{If PMM imputation method is being used, this is the number
+of donors from which to draw an imputed value.}
+
+\item{...}{Further arguments passed to \code{SuperLearner} or \code{h2o}.}
 }
 \value{
 Vector with imputed data, same type as y, and of length sum(wy)
 }
 \description{
-superlearns for mice
+Method for the \code{mice} package that uses SuperLearner as the predctive
+algorithm.  This is done through a backend powered by either the
+\code{SuperLearner} package or H2O.
 }
 \examples{
+  library(mice)
   n <- 1000
+  pmissing <- 0.10
   X1 = runif(n, min = -3, max = 3)
   X2 = X1^2 + rnorm(n, mean = 0, sd = 1)
-  error <- rnorm(n, mean=0, sd = 1)
+  error <- rnorm(n, mean = 0, sd = 1)
   Y <- X1 + X2 + error
   f <- ecdf(X1)
   x2 <- ifelse(runif(X2) < (f(X1) * 2 * pmissing), NA, X2)
   x1 <- ifelse(runif(X1) < .2, NA, X1)
   y <- ifelse(runif(Y) < .2, NA, Y)
   data <- as.data.frame(cbind(y, x1, x2))
-  SL.lib <- c("SL.glm", "SL.glm.interaction", "SL.mean", "SL.polymars")
-  imp.SL<- mice(data, m = 5, method = "SuperLearner",
-                 print = TRUE, SL.library = SL.lib, CV = TRUE)
+  SL.lib <- c("SL.glm", "SL.glm.interaction", "SL.mean", "SL.randomForest")
+  imp.SL <- mice(data, m = 5, method = "SuperLearner", print = TRUE,
+                 SL.library = SL.lib, SL.CV = TRUE,
+                 imputation.method = "regression",
+                 SL.backend = "SuperLearner")
 }
