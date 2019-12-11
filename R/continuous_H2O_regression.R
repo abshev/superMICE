@@ -1,3 +1,13 @@
+#' Function to generate imputations using regression and H2O for data with a continuous outcome
+#'
+#' @param Y blah
+#' @param X blah
+#' @param newdata blah
+#' @param SL.library blah
+#' @return nothing
+#'
+
+
 #Continuous H2O regression
 continuous.H2O.regression = function(Y, X, newdata, SL.library){
   h2oModels = lapply(SL.library, function(h2oArgs, EX, Y){

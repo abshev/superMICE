@@ -3,4 +3,5 @@
 export(mice.impute.SuperLearner)
 import(SuperLearner)
 import(h2o)
-import(mice)
+importFrom(stats,binomial)
+importFrom(stats,gaussian)

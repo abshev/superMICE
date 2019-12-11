@@ -1,7 +1,20 @@
+#' Function to generate imputations using regression and SuperLearner for data with a binary outcome
+#'
+#' @param Y blah
+#' @param X blah
+#' @param newdata blah
+#' @param SL.library blah
+#' @param SL.CV blah
+#' @param ... further arguments passed to SuperLearner
+#' @return nothing
+#'
+
+
+
 #Binary SuperLearner regression
 binary.SuperLearner.regression = function(Y, X, newdata, SL.library, SL.CV,
                                           ...){
-  args = c(list(Y = Y, X = X, family = binomial(), SL.library = SL.library),
+  args = c(list(Y = Y, X = X, family = stats::binomial(), SL.library = SL.library),
            list(...))
   args$type = NULL
   sl <- do.call(SuperLearner, args)

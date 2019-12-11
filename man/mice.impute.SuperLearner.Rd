@@ -58,7 +58,6 @@ algorithm.  This is done through a backend powered by either the
 \code{SuperLearner} package or H2O.
 }
 \examples{
-  library(mice)
   n <- 1000
   pmissing <- 0.10
   X1 = runif(n, min = -3, max = 3)
@@ -70,8 +69,8 @@ algorithm.  This is done through a backend powered by either the
   x1 <- ifelse(runif(X1) < .2, NA, X1)
   y <- ifelse(runif(Y) < .2, NA, Y)
   data <- as.data.frame(cbind(y, x1, x2))
-  SL.lib <- c("SL.glm", "SL.glm.interaction", "SL.mean", "SL.randomForest")
-  imp.SL <- mice(data, m = 5, method = "SuperLearner", print = TRUE,
+  SL.lib <- c("SL.glm", "SL.glm.interaction", "SL.mean")
+  imp.SL <- mice::mice(data, m = 5, method = "SuperLearner", print = TRUE,
                  SL.library = SL.lib, SL.CV = TRUE,
                  imputation.method = "regression",
                  SL.backend = "SuperLearner")

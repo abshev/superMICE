@@ -28,7 +28,6 @@
 #' @return Vector with imputed data, same type as y, and of length sum(wy)
 #'
 #' @examples
-#'   library(mice)
 #'   n <- 1000
 #'   pmissing <- 0.10
 #'   X1 = runif(n, min = -3, max = 3)
@@ -40,15 +39,16 @@
 #'   x1 <- ifelse(runif(X1) < .2, NA, X1)
 #'   y <- ifelse(runif(Y) < .2, NA, Y)
 #'   data <- as.data.frame(cbind(y, x1, x2))
-#'   SL.lib <- c("SL.glm", "SL.glm.interaction", "SL.mean", "SL.randomForest")
-#'   imp.SL <- mice(data, m = 5, method = "SuperLearner", print = TRUE,
+#'   SL.lib <- c("SL.glm", "SL.glm.interaction", "SL.mean")
+#'   imp.SL <- mice::mice(data, m = 5, method = "SuperLearner", print = TRUE,
 #'                  SL.library = SL.lib, SL.CV = TRUE,
 #'                  imputation.method = "regression",
 #'                  SL.backend = "SuperLearner")
 #' @export
 #' @import SuperLearner
 #' @import h2o
-#' @import mice
+#' @importFrom stats gaussian
+#' @importFrom stats binomial
 
 mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
                                     SL.CV = TRUE,
@@ -59,14 +59,15 @@ mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
   method <- match.arg(imputation.method)
 
   if(SuperLearnerPackage == "SuperLearner"){
-    if(!requireNamespace(SuperLearner)){
+    if(!requireNamespace("SuperLearner")){
       stop(simpleError('SuperLearner is not installed.'))
     }
-  }
-  else if(SuperLearnerPackage == "h2o"){
-    if(!requireNamespace(h2o)){stop(simpleError('h2o is not installed.'))}
-  }
-  else{stop(simpleError('Super Learner backend not supported.'))}
+  } else if(SuperLearnerPackage == "h2o"){
+    if(!requireNamespace("h2o")){
+      stop(simpleError('h2o is not installed.'))
+    }
+  } else{
+    stop(simpleError('Super Learner backend not supported.'))}
 
   if (is.null(wy)){
     wy <- !ry
