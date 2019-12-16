@@ -17,7 +17,7 @@ binary.SuperLearner.PMM = function(Y, X, newdata, SL.library, k, ...){
            list(...))
   args$type = NULL
   sl <- do.call(SuperLearner, args)
-  p <- predict(object = sl, newdata = newdata, X = X, Y = Y, TRUE)$pred
+  p <- predict(object = sl, newdata = X, X = X, Y = Y, TRUE)$pred
   candidates <- FNN::get.knn(matrix(p, ncol = 1), k = k)
   randomCandidates <- apply(candidates$nn.index, 1,
                             function(x){x[sample(1:k, 1)]})

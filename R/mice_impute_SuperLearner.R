@@ -99,8 +99,8 @@ mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
 
       }
       else if(SuperLearnerPackage == "SuperLearner"){
-        imps = binary.SuperLearner.PMM(Y, X, newdata, SL.library, SL.CV,
-                                       k = donors, ...)
+        imps = binary.SuperLearner.PMM(Y, X, newdata, SL.library, k = donors,
+                                       ...)
       }
     }
   }
