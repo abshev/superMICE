@@ -82,7 +82,7 @@ mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
 
   if(length(unique(y)) == 2){
     if(method == "regression"){
-      if(SLbackend == "h2o"){
+      if(SL.backend == "h2o"){
 
 
         formals(h2o.stackedEnsemble) <- args[names(args) %in%
@@ -90,7 +90,8 @@ mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
         sl <- h2o.stackedEnsemble()
       }
       else if(SuperLearnerPackage == "SuperLearner"){
-
+        imps = binary.SuperLearner.regression(Y, X, newdata, SL.library, SL.CV,
+                                              ...)
       }
     }
     else if(method == "PMM"){
@@ -98,7 +99,8 @@ mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
 
       }
       else if(SuperLearnerPackage == "SuperLearner"){
-
+        imps = binary.SuperLearner.PMM(Y, X, newdata, SL.library, SL.CV,
+                                       k = donors, ...)
       }
     }
   }

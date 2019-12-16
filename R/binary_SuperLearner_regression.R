@@ -18,8 +18,6 @@ binary.SuperLearner.regression = function(Y, X, newdata, SL.library, SL.CV,
            list(...))
   args$type = NULL
   sl <- do.call(SuperLearner, args)
-  # sl <- SuperLearner(Y = Y, X = X, family = binomial(),
-  #                   SL.library = SL.library, ...)
   p <- predict(object = sl, newdata = newdata, X = X, Y = Y, TRUE)$pred
   binaryImputations = rbinom(length(p), 1, p)
   if(is.factor(Y)){
