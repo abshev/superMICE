@@ -9,7 +9,7 @@
 
 
 #Continuous H2O regression
-continuous.H2O.regression = function(Y, X, newdata, SL.library){
+continuous.H2O.norm = function(Y, X, newdata, SL.library){
   h2oModels = lapply(SL.library, function(h2oArgs, EX, Y){
     f.h2o = h2oArgs[[1]]
     if(is.null(h2oArgs$keep_cross_validation_predictions) ||

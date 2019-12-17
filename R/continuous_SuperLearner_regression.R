@@ -11,7 +11,7 @@
 
 
 #Continuous SuperLearner Regression
-continuous.SuperLearner.regression = function(Y, X, newdata, SL.library, SL.CV,
+continuous.SuperLearner.norm = function(Y, X, newdata, SL.library, SL.CV,
                                               ...){
   args = c(list(Y = Y, X = X, family = stats::gaussian(), SL.library = SL.library),
            list(...))
