@@ -35,7 +35,6 @@
 #' @importFrom stats binomial
 
 mice.impute.h2o.norm = function(y, ry, x, wy = NULL, h2o.models){
-  method <- match.arg(imputation.method)
   if(!requireNamespace("h2o")){
     stop(simpleError('h2o is not installed.'))
   }

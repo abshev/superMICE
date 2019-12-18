@@ -34,7 +34,6 @@
 #' @importFrom stats binomial
 
 mice.impute.h2o.pmm = function(y, ry, x, wy = NULL, h2o.models, donors = 5){
-  method <- match.arg(imputation.method)
   if(!requireNamespace("h2o")){
     stop(simpleError('h2o is not installed.'))
   }
@@ -50,10 +49,10 @@ mice.impute.h2o.pmm = function(y, ry, x, wy = NULL, h2o.models, donors = 5){
   Y <- y[!wy]
 
   if(length(unique(y)) == 2){
-    imps = binary.H2O.pmm(Y, X, newdata, SL.library, k = donors)
+    imps = binary.H2O.PMM(Y, X, newdata, SL.library, k = donors)
   }
   else if(class(y) == "numeric"){
-    imps = continuous.H2O.pmm(Y, X, newdata, SL.library, k = donors)
+    imps = continuous.H2O.PMM(Y, X, newdata, SL.library, k = donors)
   }
   else{
     stop(simpleError("Invalid data type for Super Learner Imputation.

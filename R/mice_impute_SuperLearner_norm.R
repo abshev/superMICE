@@ -35,7 +35,6 @@
 
 mice.impute.SuperLearner.norm = function(y, ry, x, wy = NULL, SL.library,
                                          SL.CV = TRUE, ...){
-  method <- match.arg(imputation.method)
   if(!requireNamespace("SuperLearner")){
     stop(simpleError('SuperLearner is not installed.'))
   }
@@ -54,7 +53,7 @@ mice.impute.SuperLearner.norm = function(y, ry, x, wy = NULL, SL.library,
     imps = binary.SuperLearner.norm(Y, X, newdata, SL.library, ...)
   }
   else if(class(y) == "numeric"){
-    imps = continuous.H2O.norm(Y, X, newdata, SL.library, ...)
+    imps = continuous.SuperLearner.norm(Y, X, newdata, SL.library, ...)
   }
   else{
     stop(simpleError("Invalid data type for Super Learner Imputation.
