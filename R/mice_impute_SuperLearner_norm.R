@@ -50,10 +50,10 @@ mice.impute.SuperLearner.norm = function(y, ry, x, wy = NULL, SL.library,
   Y <- y[!wy]
 
   if(length(unique(y)) == 2){
-    imps = binary.SuperLearner.norm(Y, X, newdata, SL.library, ...)
+    imps = binary.SuperLearner.norm(Y, X, newdata, SL.library, SL.CV = SL.CV, ...)
   }
   else if(class(y) == "numeric"){
-    imps = continuous.SuperLearner.norm(Y, X, newdata, SL.library, ...)
+    imps = continuous.SuperLearner.norm(Y, X, newdata, SL.library, SL.CV = SL.CV, ...)
   }
   else{
     stop(simpleError("Invalid data type for Super Learner Imputation.

@@ -4,20 +4,20 @@
 \alias{binary.SuperLearner.PMM}
 \title{Function to generate imputations using PMM and SuperLearner for data with a binary outcome}
 \usage{
-binary.SuperLearner.PMM(Y, X, newdata, SL.library, k, ...)
+binary.SuperLearner.PMM(Y, X, wy, SL.library, k, ...)
 }
 \arguments{
 \item{Y}{blah}
 
 \item{X}{blah}
 
-\item{newdata}{blah}
-
 \item{SL.library}{blah}
 
 \item{k}{blah}
 
 \item{...}{further arguments passed to SuperLearner}
+
+\item{newdata}{blah}
 }
 \value{
 nothing

@@ -12,13 +12,11 @@
 
 
 continuous.SuperLearner.PMM = function(Y, X, newdata, SL.library, k, ...){
-  args = c(list(Y = Y, X = X, family = stats::gaussian(), SL.library = SL.library),
-           list(...))
+  args = c(list(Y = Y, X = X, family = stats::gaussian(),
+                SL.library = SL.library), list(...))
   args$type = NULL
   sl <- do.call(SuperLearner, args)
-  mu <- predict(object = sl, newdata = X, X = X, Y = Y, TRUE)$pred
-  candidates <- FNN::get.knn(matrix(mu, ncol = 1), k = k)
-  randomCandidates <- apply(candidates$nn.index, 1,
-                            function(x, k){x[sample(1:k, 1)]}, k = k)
-  Y[randomCandidates]
+  pred.impute <- predict(object = sl, newdata = newdata, X = X, Y = Y, TRUE)$pred
+  pred.candidates <- predict(object = sl, newdata = X, X = X, Y = Y, TRUE)$pred
+  knnImpute(pred.impute, pred.candidates, k)
 }

@@ -1,5 +1,4 @@
-#' Method for \code{mice} using the normal SuperLearner model fit
-#' using \code{h2o}.
+#' Normal model imputation method for \code{mice} parameterized by Super Learner via \code{h2o}.
 #'
 #' Calculates imputations for univariate missing data by the normal model.
 #' Parameters for the normal distribution generating the data are determined
@@ -13,23 +12,35 @@
 #' Matrix x may have no missing values.
 #' @param wy Logical vector of length length(y). A TRUE value indicates
 #' locations in y for which imputations are created.
-#' @param SL.library For SuperLearner: Either a character vector of prediction
-#' algorithms or list containing character vectors as specified by the
-#' SuperLearner package.  For h2o, a named list of character vectors specifying
+#' @param h2o.models A named list of character vectors specifying
 #' prediction algorithms and arguments to be passed to h2o.  See details below
 #' for examples on the structure.
-#' @param SL.CV Logical.  If true cv.SuperLearner is used to estimate the risk.
-#' @param SL.backend Backend to fit the SuperLearner models.  Must be
-#' one of "SuperLearner" or "h2o".
-#' @param imputation.method Method used to randomly generate imputed values.
-#' Must be one of "Regression" or "PMM".
-#' @param donors If PMM imputation method is being used, this is the number
-#' of donors from which to draw an imputed value.
 #' @param ... Further arguments passed to \code{SuperLearner} or \code{h2o}.
 #' @return Vector with imputed data, same type as y, and of length sum(wy)
 #'
+#' @details
+#' TO DO: Add details
+#'
+#' @example
+#' \dontrun{
+#' # Define the h2o models
+#' h2o.mods = list()
+#'
+#' # Run mice using the h2o normal method
+#' imps = mice::mice(mice::nhanes, m = 5, method = "h2o.norm",
+#'                    h2o.models = h2o.mods)
+#'
+#' # list the actual imputations
+#' imp$imp$bmi
+#'
+#' # first completed data matrix
+#' complete(imps)
+#'
+#' # predict hypertensive from age, bmi, and total serum cholesterol
+#'
+#' }
+#'
 #' @export
-#' @import SuperLearner
 #' @import h2o
 #' @importFrom stats gaussian
 #' @importFrom stats binomial

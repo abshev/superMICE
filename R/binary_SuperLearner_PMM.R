@@ -12,14 +12,12 @@
 
 
 #Binary SuperLearner PMM
-binary.SuperLearner.PMM = function(Y, X, newdata, SL.library, k, ...){
+binary.SuperLearner.PMM = function(Y, X, wy, SL.library, k, ...){
   args = c(list(Y = Y, X = X, family = stats::binomial(), SL.library = SL.library),
            list(...))
   args$type = NULL
   sl <- do.call(SuperLearner, args)
-  p <- predict(object = sl, newdata = X, X = X, Y = Y, TRUE)$pred
-  candidates <- FNN::get.knn(matrix(p, ncol = 1), k = k)
-  randomCandidates <- apply(candidates$nn.index, 1,
-                            function(x){x[sample(1:k, 1)]})
-  Y[randomCandidates]
+  pred.impute <- predict(object = sl, newdata = newdata, X = X, Y = Y, TRUE)$pred
+  pred.candidates <- predict(object = sl, newdata = X, X = X, Y = Y, TRUE)$pred
+  knnImpute(pred.impute, pred.candidates, k)
 }

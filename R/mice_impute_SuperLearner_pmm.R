@@ -1,8 +1,8 @@
-#' SuperLearner method for \code{mice} package.
+#' Predictive Mean Matching (PMM) imputation method for \code{mice} using Super Learner via \code{SuperLearner}.
 #'
-#' Method for the \code{mice} package that uses SuperLearner as the predctive
-#' algorithm.  This is done through a backend powered by either the
-#' \code{SuperLearner} package or H2O.
+#' Samples imputations for univariate missing data using PMM.
+#' Distances for PMM are computed using predictions from a Super Learner model
+#' instead of the standard regression model.
 #'
 #' @param y Vector to be imputed
 #' @param ry Logical vector of length length(y) indicating the the subset y[ry]
@@ -12,29 +12,22 @@
 #' Matrix x may have no missing values.
 #' @param wy Logical vector of length length(y). A TRUE value indicates
 #' locations in y for which imputations are created.
-#' @param SL.library For SuperLearner: Either a character vector of prediction
-#' algorithms or list containing character vectors as specified by the
-#' SuperLearner package.  For h2o, a named list of character vectors specifying
-#' prediction algorithms and arguments to be passed to h2o.  See details below
-#' for examples on the structure.
-#' @param SL.CV Logical.  If true cv.SuperLearner is used to estimate the risk.
-#' @param SL.backend Backend to fit the SuperLearner models.  Must be
-#' one of "SuperLearner" or "h2o".
-#' @param imputation.method Method used to randomly generate imputed values.
-#' Must be one of "Regression" or "PMM".
-#' @param donors If PMM imputation method is being used, this is the number
-#' of donors from which to draw an imputed value.
-#' @param ... Further arguments passed to \code{SuperLearner} or \code{h2o}.
+#' @param SL.library A character vector of prediction algorithms or list
+#' containing character vectors as specified by the SuperLearner package.
+#' @param donors The size of the donor pool among which a draw is made. The
+#' default is donors = 5L. Setting donors = 1L always selects the closest match,
+#' but is not recommended. Values between 3L and 10L provide the best results
+#' in most cases (Morris et al, 2015).
+#' @param ... Further arguments passed to \code{SuperLearner}.
 #' @return Vector with imputed data, same type as y, and of length sum(wy)
 #'
 #' @export
 #' @import SuperLearner
-#' @import h2o
 #' @importFrom stats gaussian
 #' @importFrom stats binomial
 
 mice.impute.SuperLearner.pmm = function(y, ry, x, wy = NULL, SL.library,
-                                         SL.CV = TRUE, donors = 5, ...){
+                                        donors = 5, ...){
   if(!requireNamespace("SuperLearner")){
     stop(simpleError('SuperLearner is not installed.'))
   }
