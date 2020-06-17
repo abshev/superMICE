@@ -27,24 +27,6 @@
 #' @param ... Further arguments passed to \code{SuperLearner} or \code{h2o}.
 #' @return Vector with imputed data, same type as y, and of length sum(wy)
 #'
-#' @examples
-#'   n <- 1000
-#'   pmissing <- 0.10
-#'   X1 = runif(n, min = -3, max = 3)
-#'   X2 = X1^2 + rnorm(n, mean = 0, sd = 1)
-#'   error <- rnorm(n, mean = 0, sd = 1)
-#'   Y <- X1 + X2 + error
-#'   f <- ecdf(X1)
-#'   x2 <- ifelse(runif(X2) < (f(X1) * 2 * pmissing), NA, X2)
-#'   x1 <- ifelse(runif(X1) < .2, NA, X1)
-#'   y <- ifelse(runif(Y) < .2, NA, Y)
-#'   data <- as.data.frame(cbind(y, x1, x2))
-#'   SL.lib <- c("SL.glm", "SL.glm.interaction", "SL.mean")
-#'   imp.SL <- mice::mice(data, m = 5, method = "SuperLearner", print = TRUE,
-#'                  SL.library = SL.lib, SL.CV = TRUE,
-#'                  imputation.method = "regression",
-#'                  SL.backend = "SuperLearner")
-#' @export
 #' @import SuperLearner
 #' @import h2o
 #' @importFrom stats gaussian

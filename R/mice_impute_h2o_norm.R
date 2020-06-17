@@ -21,7 +21,7 @@
 #' @details
 #' TO DO: Add details
 #'
-#' @example
+#' @examples
 #' \dontrun{
 #' # Define the h2o models
 #' h2o.mods = list()

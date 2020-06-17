@@ -48,3 +48,23 @@ The backend fitting the Super Learner models is H2O.  Models are specified
 as a list of named character vectors.  The first element of each vector is
 the name of the function being called in H2O.
 }
+\examples{
+\dontrun{
+# Define the h2o models
+h2o.mods = list(TO DO)
+
+# Run mice using the h2o normal method
+imps = mice::mice(mice::nhanes, m = 5, method = "h2o.norm",
+                   h2o.models = h2o.mods)
+
+# list the actual imputations
+imp$imp$bmi
+
+# first completed data matrix
+complete(imps)
+
+# predict hypertensive from age, bmi, and total serum cholesterol
+
+}
+
+}

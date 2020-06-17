@@ -36,3 +36,23 @@ using a SuperLearner model fit in H2O.
 \details{
 TO DO: Add details
 }
+\examples{
+\dontrun{
+# Define the h2o models
+h2o.mods = list()
+
+# Run mice using the h2o normal method
+imps = mice::mice(mice::nhanes, m = 5, method = "h2o.norm",
+                   h2o.models = h2o.mods)
+
+# list the actual imputations
+imp$imp$bmi
+
+# first completed data matrix
+complete(imps)
+
+# predict hypertensive from age, bmi, and total serum cholesterol
+
+}
+
+}

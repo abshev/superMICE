@@ -18,14 +18,26 @@
 #' prediction algorithms and arguments to be passed to h2o.  See details below
 #' for examples on the structure.
 #' @param SL.CV Logical.  If true cv.SuperLearner is used to estimate the risk.
-#' @param SL.backend Backend to fit the SuperLearner models.  Must be
-#' one of "SuperLearner" or "h2o".
-#' @param imputation.method Method used to randomly generate imputed values.
-#' Must be one of "Regression" or "PMM".
-#' @param donors If PMM imputation method is being used, this is the number
-#' of donors from which to draw an imputed value.
+#' @param method.weights If TRUE, for each run of \code{SuperLearner()}, a list
+#' of weights for each method is SL.library is returned.
 #' @param ... Further arguments passed to \code{SuperLearner} or \code{h2o}.
 #' @return Vector with imputed data, same type as y, and of length sum(wy)
+#'
+#' @examples
+#'   n <- 1000
+#'   pmissing <- 0.10
+#'   X1 = runif(n, min = -3, max = 3)
+#'   X2 = X1^2 + rnorm(n, mean = 0, sd = 1)
+#'   error <- rnorm(n, mean = 0, sd = 1)
+#'   Y <- X1 + X2 + error
+#'   f <- ecdf(X1)
+#'   x2 <- ifelse(runif(X2) < (f(X1) * 2 * pmissing), NA, X2)
+#'   x1 <- ifelse(runif(X1) < .2, NA, X1)
+#'   y <- ifelse(runif(Y) < .2, NA, Y)
+#'   data <- as.data.frame(cbind(y, x1, x2))
+#'   SL.lib <- c("SL.glm", "SL.glm.interaction", "SL.mean")
+#'   imp.SL <- mice::mice(data, m = 5, method = "SuperLearner.norm",
+#'                          print = TRUE, SL.library = SL.lib, SL.CV = TRUE)
 #'
 #' @export
 #' @import SuperLearner
@@ -34,9 +46,14 @@
 #' @importFrom stats binomial
 
 mice.impute.SuperLearner.norm = function(y, ry, x, wy = NULL, SL.library,
-                                         SL.CV = TRUE, ...){
+                                         SL.CV = TRUE, method.weights = FALSE,
+                                         ...){
   if(!requireNamespace("SuperLearner")){
     stop(simpleError('SuperLearner is not installed.'))
+  }
+
+  if(method.weights && is.null(.GlobalEnv$SuperMICE.weights)){
+    .GlobalEnv$SuperMICE.weights <- list()
   }
 
   if (is.null(wy)){
@@ -50,10 +67,12 @@ mice.impute.SuperLearner.norm = function(y, ry, x, wy = NULL, SL.library,
   Y <- y[!wy]
 
   if(length(unique(y)) == 2){
-    imps = binary.SuperLearner.norm(Y, X, newdata, SL.library, SL.CV = SL.CV, ...)
+    imps = binary.SuperLearner.norm(Y, X, newdata, SL.library, SL.CV = SL.CV,
+                                    method.weights = method.weights, ...)
   }
   else if(class(y) == "numeric"){
-    imps = continuous.SuperLearner.norm(Y, X, newdata, SL.library, SL.CV = SL.CV, ...)
+    imps = continuous.SuperLearner.norm(Y, X, newdata, SL.library, SL.CV = SL.CV,
+                                        method.weights = method.weights, ...)
   }
   else{
     stop(simpleError("Invalid data type for Super Learner Imputation.

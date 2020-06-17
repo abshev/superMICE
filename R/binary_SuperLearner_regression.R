@@ -13,11 +13,18 @@
 
 #Binary SuperLearner regression
 binary.SuperLearner.norm = function(Y, X, newdata, SL.library, SL.CV,
-                                          ...){
+                                    method.weights, ...){
   args = c(list(Y = Y, X = X, family = stats::binomial(), SL.library = SL.library),
            list(...))
+  if(is.null(args$parallel)){
+    args$parallel = "seq"
+  }
   args$type = NULL
-  sl <- do.call(SuperLearner, args)
+  sl <- do.call(SuperLearner, args[names(args) != "parallel"])
+  if(method.weights){
+    .GlobalEnv$superMICE.weights <- c(.GlobalEnv$superMICE.weights,
+                                      list(sl$coef))
+  }
   p <- predict(object = sl, newdata = newdata, X = X, Y = Y, TRUE)$pred
   binaryImputations = rbinom(length(p), 1, p)
   if(is.factor(Y)){

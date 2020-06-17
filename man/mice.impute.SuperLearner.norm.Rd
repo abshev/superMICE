@@ -11,6 +11,7 @@ mice.impute.SuperLearner.norm(
   wy = NULL,
   SL.library,
   SL.CV = TRUE,
+  method.weights = FALSE,
   ...
 )
 }
@@ -35,16 +36,10 @@ for examples on the structure.}
 
 \item{SL.CV}{Logical.  If true cv.SuperLearner is used to estimate the risk.}
 
+\item{method.weights}{If TRUE, for each run of \code{SuperLearner()}, a list
+of weights for each method is SL.library is returned.}
+
 \item{...}{Further arguments passed to \code{SuperLearner} or \code{h2o}.}
-
-\item{SL.backend}{Backend to fit the SuperLearner models.  Must be
-one of "SuperLearner" or "h2o".}
-
-\item{imputation.method}{Method used to randomly generate imputed values.
-Must be one of "Regression" or "PMM".}
-
-\item{donors}{If PMM imputation method is being used, this is the number
-of donors from which to draw an imputed value.}
 }
 \value{
 Vector with imputed data, same type as y, and of length sum(wy)
@@ -53,4 +48,21 @@ Vector with imputed data, same type as y, and of length sum(wy)
 Method for the \code{mice} package that uses SuperLearner as the predctive
 algorithm.  This is done through a backend powered by either the
 \code{SuperLearner} package or H2O.
+}
+\examples{
+  n <- 1000
+  pmissing <- 0.10
+  X1 = runif(n, min = -3, max = 3)
+  X2 = X1^2 + rnorm(n, mean = 0, sd = 1)
+  error <- rnorm(n, mean = 0, sd = 1)
+  Y <- X1 + X2 + error
+  f <- ecdf(X1)
+  x2 <- ifelse(runif(X2) < (f(X1) * 2 * pmissing), NA, X2)
+  x1 <- ifelse(runif(X1) < .2, NA, X1)
+  y <- ifelse(runif(Y) < .2, NA, Y)
+  data <- as.data.frame(cbind(y, x1, x2))
+  SL.lib <- c("SL.glm", "SL.glm.interaction", "SL.mean")
+  imp.SL <- mice::mice(data, m = 5, method = "SuperLearner.norm",
+                         print = TRUE, SL.library = SL.lib, SL.CV = TRUE)
+
 }

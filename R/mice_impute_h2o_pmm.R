@@ -33,7 +33,7 @@
 #' the name of the function being called in H2O.
 #'
 #'
-#' @example
+#' @examples
 #' \dontrun{
 #' # Define the h2o models
 #' h2o.mods = list(TO DO)
