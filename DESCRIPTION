@@ -1,7 +1,7 @@
 Package: superMICE
 Type: Package
 Title: SuperLearner Method for MICE
-Version: 0.3.3
+Version: 0.4.0
 Author: Aaron B. Shev
 Maintainer: Aaron B. Shev <abshev@ucdavis.edu>
 Description: This humble package adds a Super Learner ensemble model method using 
@@ -9,7 +9,8 @@ Description: This humble package adds a Super Learner ensemble model method usin
 Imports:
     mice,
     SuperLearner,
-    h2o
+    h2o,
+    evmix
 Suggests:
     randomForest,
     glmnet

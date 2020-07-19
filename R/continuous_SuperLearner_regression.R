@@ -12,8 +12,15 @@
 
 
 #Continuous SuperLearner Regression
-continuous.SuperLearner.norm = function(Y, X, newdata, SL.library, SL.CV,
+continuous.SuperLearner.norm = function(y, x, wy, SL.library, SL.CV,
                                         method.weights, ...){
+  newdata <- data.frame(x)
+  names(newdata) = sapply(1:ncol(newdata), function(n){paste0("x", n)})
+
+  X <- data.frame(x[!wy,])
+  names(X) = sapply(1:ncol(newdata), function(n){paste0("x", n)})
+  Y <- y[!wy]
+
   args = c(list(Y = Y, X = X, family = stats::gaussian(), SL.library = SL.library),
            list(...))
   if(is.null(args$parallel)){
@@ -21,19 +28,26 @@ continuous.SuperLearner.norm = function(Y, X, newdata, SL.library, SL.CV,
   }
   args$type = NULL
   sl <- do.call(SuperLearner, args[names(args) != "parallel"])
-  mu <- predict(object = sl, newdata = newdata, X = X, Y = Y, TRUE)$pred
+  sl.preds <- predict(object = sl, newdata = newdata, X = X, Y = Y, TRUE)$pred
   if(method.weights){
     .GlobalEnv$superMICE.weights <- c(.GlobalEnv$superMICE.weights,
                                       list(sl$coef))
   }
-  if(SL.CV){
-    cv.sl = do.call(CV.SuperLearner, args)
-    MSE <- summary(cv.sl)$Table$Ave[1]
-    sd <- sqrt(MSE * (1 + 1 / nrow(X)))
-  }
-  else{
-    MSE <- mean((sl$SL.predict - y[!wy])^2)
-    sd <- sqrt(MSE * (1 + 1 / nrow(X)))
-  }
-  rnorm(length(mu), mu, sd)
+
+  sapply(1:sum(wy), localImputation, x = sl.preds, y = y,
+         delta = as.numeric(!wy),
+         bw = 0.5,
+         imputation = "semiparametric",
+         kernel = "gaussian",
+         weightType ="nadaraya-watson")
+  # if(SL.CV){
+  #   cv.sl = do.call(CV.SuperLearner, args)
+  #   MSE <- summary(cv.sl)$Table$Ave[1]
+  #   sd <- sqrt(MSE * (1 + 1 / nrow(X)))
+  # }
+  # else{
+  #   MSE <- mean((sl$SL.predict - y[!wy])^2)
+  #   sd <- sqrt(MSE * (1 + 1 / nrow(X)))
+  # }
+  # rnorm(length(mu), mu, sd)
 }

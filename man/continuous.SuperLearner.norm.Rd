@@ -4,23 +4,9 @@
 \alias{continuous.SuperLearner.norm}
 \title{Function to generate imputations using regression and SuperLearner for data with a continuous outcome}
 \usage{
-continuous.SuperLearner.norm(
-  Y,
-  X,
-  newdata,
-  SL.library,
-  SL.CV,
-  method.weights,
-  ...
-)
+continuous.SuperLearner.norm(y, x, wy, SL.library, SL.CV, method.weights, ...)
 }
 \arguments{
-\item{Y}{blah}
-
-\item{X}{blah}
-
-\item{newdata}{blah}
-
 \item{SL.library}{blah}
 
 \item{SL.CV}{blah}
@@ -28,6 +14,12 @@ continuous.SuperLearner.norm(
 \item{method.weights}{blah}
 
 \item{...}{further arguments passed to SuperLearner}
+
+\item{Y}{blah}
+
+\item{X}{blah}
+
+\item{newdata}{blah}
 }
 \value{
 nothing
