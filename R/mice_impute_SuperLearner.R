@@ -47,7 +47,7 @@
 #' @importFrom stats binomial
 
 mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
-                                         SL.CV = TRUE, method.weights = FALSE,
+                                         bw, method.weights = FALSE,
                                          ...){
   if(!requireNamespace("SuperLearner")){
     stop(simpleError('SuperLearner is not installed.'))
@@ -62,11 +62,11 @@ mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
   }
 
   if(length(unique(y)) == 2){
-    imps = binary.SuperLearner.norm(y, x, SL.library, SL.CV = SL.CV,
+    imps = binary.SuperLearner.norm(y, x, SL.library, bw = bw,
                                     method.weights = method.weights, ...)
   }
   else if(class(y) == "numeric"){
-    imps = continuous.SuperLearner.norm(y, x, wy, SL.library, SL.CV = SL.CV,
+    imps = continuous.SuperLearner.norm(y, x, wy, SL.library, bw = bw,
                                         method.weights = method.weights, ...)
   }
   else{

@@ -12,7 +12,7 @@
 
 
 #Continuous SuperLearner Regression
-continuous.SuperLearner.norm = function(y, x, wy, SL.library, SL.CV,
+continuous.SuperLearner.norm = function(y, x, wy, SL.library, bw,
                                         method.weights, ...){
   newdata <- data.frame(x)
   names(newdata) = sapply(1:ncol(newdata), function(n){paste0("x", n)})
@@ -36,7 +36,7 @@ continuous.SuperLearner.norm = function(y, x, wy, SL.library, SL.CV,
 
   sapply(1:sum(wy), localImputation, x = sl.preds, y = y,
          delta = as.numeric(!wy),
-         bw = 0.5,
+         bw = bw,
          imputation = "semiparametric",
          kernel = "gaussian",
          weightType ="nadaraya-watson")
