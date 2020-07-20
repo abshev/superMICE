@@ -12,7 +12,7 @@
 
 
 #Binary SuperLearner regression
-binary.SuperLearner.norm = function(Y, X, newdata, SL.library, SL.CV,
+binary.SuperLearner.norm = function(Y, X, newdata, SL.library, bw,
                                     method.weights, ...){
   args = c(list(Y = Y, X = X, family = stats::binomial(), SL.library = SL.library),
            list(...))
