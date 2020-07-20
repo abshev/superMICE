@@ -19,7 +19,7 @@ localImputation <- function(i, x, y, delta, bw,
                             weightType = c("nadaraya-watson")){
   if(kernel == "gaussian"){
     kernVals = kdgaussian(x = x, lambda = NULL, bw = bw,
-                                 kerncentres = x[delta == 1][i])
+                                 kerncentres = x[delta == 0][i])
   }
   if(weightType == "nadaraya-watson"){
     weights = kernVals / sum(kernVals)

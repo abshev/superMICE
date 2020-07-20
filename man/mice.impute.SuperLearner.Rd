@@ -10,7 +10,7 @@ mice.impute.SuperLearner(
   x,
   wy = NULL,
   SL.library,
-  SL.CV = TRUE,
+  bw,
   method.weights = FALSE,
   ...
 )
@@ -34,12 +34,12 @@ SuperLearner package.  For h2o, a named list of character vectors specifying
 prediction algorithms and arguments to be passed to h2o.  See details below
 for examples on the structure.}
 
-\item{SL.CV}{Logical.  If true cv.SuperLearner is used to estimate the risk.}
-
 \item{method.weights}{If TRUE, for each run of \code{SuperLearner()}, a list
 of weights for each method is SL.library is returned.}
 
 \item{...}{Further arguments passed to \code{SuperLearner} or \code{h2o}.}
+
+\item{SL.CV}{Logical.  If true cv.SuperLearner is used to estimate the risk.}
 }
 \value{
 Vector with imputed data, same type as y, and of length sum(wy)
@@ -63,6 +63,6 @@ algorithm.  This is done through a backend powered by either the
   data <- as.data.frame(cbind(y, x1, x2))
   SL.lib <- c("SL.glm", "SL.glm.interaction", "SL.mean")
   imp.SL <- mice::mice(data, m = 5, method = "SuperLearner",
-                         print = TRUE, SL.library = SL.lib, SL.CV = TRUE)
+                         print = TRUE, SL.library = SL.lib, bw = 0.1)
 
 }
