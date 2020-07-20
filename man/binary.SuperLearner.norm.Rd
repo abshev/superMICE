@@ -4,7 +4,7 @@
 \alias{binary.SuperLearner.norm}
 \title{Function to generate imputations using regression and SuperLearner for data with a binary outcome}
 \usage{
-binary.SuperLearner.norm(Y, X, newdata, SL.library, SL.CV, method.weights, ...)
+binary.SuperLearner.norm(Y, X, newdata, SL.library, bw, method.weights, ...)
 }
 \arguments{
 \item{Y}{blah}
@@ -15,9 +15,9 @@ binary.SuperLearner.norm(Y, X, newdata, SL.library, SL.CV, method.weights, ...)
 
 \item{SL.library}{blah}
 
-\item{SL.CV}{blah}
-
 \item{...}{further arguments passed to SuperLearner}
+
+\item{SL.CV}{blah}
 }
 \value{
 nothing

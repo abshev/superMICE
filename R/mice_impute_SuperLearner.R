@@ -37,7 +37,7 @@
 #'   data <- as.data.frame(cbind(y, x1, x2))
 #'   SL.lib <- c("SL.glm", "SL.glm.interaction", "SL.mean")
 #'   imp.SL <- mice::mice(data, m = 5, method = "SuperLearner",
-#'                          print = TRUE, SL.library = SL.lib, SL.CV = TRUE)
+#'                          print = TRUE, SL.library = SL.lib, bw = 0.1)
 #'
 #' @export
 #' @import SuperLearner
