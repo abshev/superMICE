@@ -3,7 +3,6 @@
 export(mice.impute.SuperLearner)
 export(mice.impute.h2o.norm)
 import(SuperLearner)
-import(evmix)
 import(h2o)
 importFrom(stats,binomial)
 importFrom(stats,gaussian)

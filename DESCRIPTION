@@ -9,8 +9,7 @@ Description: This humble package adds a Super Learner ensemble model method usin
 Imports:
     mice,
     SuperLearner,
-    h2o,
-    evmix
+    h2o
 Suggests:
     randomForest,
     glmnet

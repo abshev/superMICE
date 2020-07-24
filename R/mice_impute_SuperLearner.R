@@ -42,7 +42,6 @@
 #' @export
 #' @import SuperLearner
 #' @import h2o
-#' @import evmix
 #' @importFrom stats gaussian
 #' @importFrom stats binomial
 
