@@ -2,39 +2,39 @@
 % Please edit documentation in R/local_imputaiton.R
 \name{localImputation}
 \alias{localImputation}
-\title{Function to generate imputations using regression and SuperLearner for data with a continuous outcome}
+\title{Function to generate imputations using non-parametric and semi-parametric local imputation methods.}
 \usage{
 localImputation(
   i,
-  x,
+  preds,
   y,
   delta,
   bw,
   imputation = c("semiparametric", "nonparametric"),
   kernel = c("gaussian"),
-  weightType = c("nadaraya-watson")
+  weights = c("nadaraya-watson")
 )
 }
 \arguments{
-\item{x}{blah}
+\item{i}{Integer referring to the index of the missing value to be imputed.}
 
-\item{y}{blah}
+\item{preds}{Numeric vector of predictions of missing values from SuperLearner or H2O.}
 
-\item{delta}{blah}
+\item{y}{Numeric vector for variable to be imputed.}
 
-\item{bw}{blah}
+\item{delta}{Binary vector of length length(y) with 1 where y is observed and 0 where y is missing.}
 
-\item{imputation}{blah}
+\item{bw}{Bandwidth to be passed to kernel function.}
 
-\item{kernel}{further arguments passed to SuperLearner}
+\item{imputation}{One of "semiparametric" or "nonparametric". Determines distribution from which imputed values are drawn. See mice.impute.SuperLearner() or mice.impute.h2o() for more details.}
 
-\item{weightType}{blah}
+\item{kernel}{Kernel function used to compute weights.}
 
-\item{preds}{blah}
+\item{weights}{One of "nadaraya-watson", ...}
 }
 \value{
-nothing
+Numeric vector of randomly drawn imputed values.
 }
 \description{
-Function to generate imputations using regression and SuperLearner for data with a continuous outcome
+Function to generate imputations using non-parametric and semi-parametric local imputation methods.
 }

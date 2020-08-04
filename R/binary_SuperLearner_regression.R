@@ -1,19 +1,17 @@
-#' Function to generate imputations using regression and SuperLearner for data with a binary outcome
+#' Function to generate imputations using SuperLearner for data with a binary outcome.
 #'
-#' @param Y blah
-#' @param X blah
-#' @param newdata blah
-#' @param SL.library blah
-#' @param SL.CV blah
-#' @param ... further arguments passed to SuperLearner
-#' @return nothing
+#' @param Y Vector of observed values of the variable to be imputed.
+#' @param X Numeric matrix of variables to be used as predictors in SuperLearner methods with rows corresponding to values in Y.
+#' @param newdata Numeric matrix of variables to as predictors in SuperLearner methods with rows corresponding to missing values of the variable to be imputed. The SuperLearner model makes predictions from this matrix to determine the imputation-generating distribution.
+#' @param SL.library Either a character vector of prediction algorithms or a list containing character vectors. A list of functions included in the SuperLearner package can be found with SuperLearner::listWrappers().
+#' @param ... Further arguments passed to SuperLearner.
+#' @return Binary Vector of randomly drawn imputed values.
 #'
 
 
 
 #Binary SuperLearner regression
-binary.SuperLearner.norm = function(Y, X, newdata, SL.library, bw,
-                                    method.weights, ...){
+binary.SuperLearner = function(Y, X, newdata, SL.library, ...){
   args = c(list(Y = Y, X = X, family = stats::binomial(), SL.library = SL.library),
            list(...))
   if(is.null(args$parallel)){
@@ -21,11 +19,11 @@ binary.SuperLearner.norm = function(Y, X, newdata, SL.library, bw,
   }
   args$type = NULL
   sl <- do.call(SuperLearner, args[names(args) != "parallel"])
-  if(method.weights){
-    .GlobalEnv$superMICE.weights <- c(.GlobalEnv$superMICE.weights,
-                                      list(sl$coef))
-  }
-  p <- predict(object = sl, newdata = newdata, X = X, Y = Y, TRUE)$pred
+  # if(method.weights){
+  #   .GlobalEnv$superMICE.weights <- c(.GlobalEnv$superMICE.weights,
+  #                                     list(sl$coef))
+  # }
+  p <- predict.SuperLearner(object = sl, newdata = newdata, X = X, Y = Y, TRUE)$pred
   binaryImputations = rbinom(length(p), 1, p)
   if(is.factor(Y)){
     levels(Y)[binaryImputations + 1]

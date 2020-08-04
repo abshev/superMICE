@@ -1,15 +1,20 @@
 #' Function to generate imputations using regression and H2O for data with a continuous outcome
 #'
-#' @param Y blah
-#' @param X blah
-#' @param newdata blah
-#' @param SL.library blah
-#' @return nothing
+#' @param Y Vector of observed values of the variable to be imputed.
+#' @param X Numeric matrix of variables to be used as predictors in H2O methods
+#' with rows corresponding to observed values of the variable to be imputed.
+#' @param newdata Numeric matrix of variables to as predictors in H2O methods
+#' with rows corresponding to missing values of the variable to be imputed. The
+#' H2O model makes predictions from this matrix to determine the
+#' imputation-generating distribution.
+#' @param SL.library List of functions and parameters to be passed on to the
+#' H2O function
+#' @return Numeric vector of randomly generated imputed values.
 #'
 
 
 #Continuous H2O regression
-continuous.H2O.norm = function(Y, X, newdata, SL.library){
+continuous.H2O = function(Y, X, newdata, SL.library){
   h2oModels = lapply(SL.library, function(h2oArgs, EX, Y){
     f.h2o = h2oArgs[[1]]
     if(is.null(h2oArgs$keep_cross_validation_predictions) ||
