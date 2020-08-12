@@ -4,7 +4,7 @@
 \alias{mice.impute.h2o.norm}
 \title{Normal model imputation method for \code{mice} parameterized by Super Learner via \code{h2o}.}
 \usage{
-mice.impute.h2o.norm(y, ry, x, wy = NULL, h2o.models)
+mice.impute.h2o.norm(y, ry, x, wy = NULL, h2o.models, ...)
 }
 \arguments{
 \item{y}{Vector to be imputed}

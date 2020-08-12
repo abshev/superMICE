@@ -10,8 +10,9 @@ mice.impute.SuperLearner(
   x,
   wy = NULL,
   SL.library,
-  kernel = "gaussian",
-  bw = 0.1,
+  kernel = c("gaussian", "uniform", "triangular"),
+  bw = NULL,
+  lambda = NULL,
   imputation = "semiparametric",
   weights = "nadaraya-watson",
   ...
@@ -36,9 +37,12 @@ SuperLearner package.  For h2o, a named list of character vectors specifying
 prediction algorithms and arguments to be passed to h2o.  See details below
 for examples on the structure.}
 
-\item{kernel}{One of "gaussian",...  Kernel function used to compute weights.}
+\item{kernel}{One of "gaussian", "uniform", "triangular".  Kernel function
+used to compute weights.}
 
-\item{bw}{Numeric value for bandwidth to be used in the kernel function}
+\item{bw}{NULL or numeric value for bandwidth of kernel function (as standard deviations of the kernel).}
+
+\item{lambda}{NULL or numeric value for bandwidth for kernel (as half-width of the kernel).}
 
 \item{imputation}{One of "semiparametric" or "nonparametric". Determines
 distribution from which imputed values are drawn. See

@@ -9,9 +9,10 @@ localImputation(
   preds,
   y,
   delta,
-  bw,
+  bw = NULL,
+  lambda = NULL,
   imputation = c("semiparametric", "nonparametric"),
-  kernel = c("gaussian"),
+  kernel = c("gaussian", "uniform", "triangular"),
   weights = c("nadaraya-watson")
 )
 }
@@ -24,7 +25,9 @@ localImputation(
 
 \item{delta}{Binary vector of length length(y) with 1 where y is observed and 0 where y is missing.}
 
-\item{bw}{Bandwidth to be passed to kernel function.}
+\item{bw}{NULL or numeric value for bandwidth of kernel function (as standard deviations of the kernel).}
+
+\item{lambda}{NULL or numeric value for bandwidth for kernel (as half-width of the kernel).}
 
 \item{imputation}{One of "semiparametric" or "nonparametric". Determines distribution from which imputed values are drawn. See mice.impute.SuperLearner() or mice.impute.h2o() for more details.}
 

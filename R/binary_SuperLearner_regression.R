@@ -7,6 +7,7 @@
 #' @param ... Further arguments passed to SuperLearner.
 #' @return Binary Vector of randomly drawn imputed values.
 #'
+#' @importFrom stats binomial
 
 
 

@@ -6,6 +6,7 @@
 #' @param SL.library blah
 #' @return nothing
 #'
+#' @importFrom stats rbinom
 
 
 binary.H2O.norm = function(Y, X, newdata, SL.library){

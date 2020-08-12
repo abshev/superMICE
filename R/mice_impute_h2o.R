@@ -45,7 +45,7 @@
 #' @importFrom stats gaussian
 #' @importFrom stats binomial
 
-mice.impute.h2o.norm = function(y, ry, x, wy = NULL, h2o.models){
+mice.impute.h2o.norm = function(y, ry, x, wy = NULL, h2o.models, ...){
   if(!requireNamespace("h2o")){
     stop(simpleError('h2o is not installed.'))
   }

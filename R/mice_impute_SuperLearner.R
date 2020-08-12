@@ -17,8 +17,10 @@
 #' SuperLearner package.  For h2o, a named list of character vectors specifying
 #' prediction algorithms and arguments to be passed to h2o.  See details below
 #' for examples on the structure.
-#' @param kernel One of "gaussian",...  Kernel function used to compute weights.
-#' @param bw Numeric value for bandwidth to be used in the kernel function
+#' @param kernel One of "gaussian", "uniform", "triangular".  Kernel function
+#' used to compute weights.
+#' @param bw NULL or numeric value for bandwidth of kernel function (as standard deviations of the kernel).
+#' @param lambda NULL or numeric value for bandwidth for kernel (as half-width of the kernel).
 #' @param imputation One of "semiparametric" or "nonparametric". Determines
 #' distribution from which imputed values are drawn. See
 #' mice.impute.SuperLearner() documentation for more details.
@@ -50,7 +52,9 @@
 #' @importFrom stats binomial
 
 mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
-                                    kernel = "gaussian", bw = 0.1,
+                                    kernel = c("gaussian", "uniform",
+                                               "triangular"),
+                                    bw = NULL, lambda = NULL,
                                     imputation = "semiparametric",
                                     weights = "nadaraya-watson", ...){
   if(!requireNamespace("SuperLearner")){
@@ -69,8 +73,8 @@ mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
     imps = binary.SuperLearner(y, x, SL.library, ...)
   }
   else if(class(y) == "numeric"){
-    imps = continuous.SuperLearner(y, x, wy, SL.library, bw = bw,
-                                        kernel = kernel,
+    imps = continuous.SuperLearner(y, x, wy, SL.library, kernel = kernel,
+                                        bw = bw, lambda = lambda,
                                         imputation = imputation,
                                         weights = weights, ...)
   }

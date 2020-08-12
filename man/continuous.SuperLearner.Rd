@@ -11,6 +11,7 @@ continuous.SuperLearner(
   SL.library,
   kernel,
   bw,
+  lambda,
   imputation,
   weights,
   ...
@@ -31,7 +32,9 @@ SuperLearner package can be found with SuperLearner::listWrappers().}
 
 \item{kernel}{One of "gaussian",...  Kernel function used to compute weights.}
 
-\item{bw}{Numeric value for bandwidth to be used in the kernel function}
+\item{bw}{NULL or numeric value for bandwidth of kernel function (as standard deviations of the kernel).}
+
+\item{lambda}{NULL or numeric value for bandwidth for kernel (as half-width of the kernel).}
 
 \item{imputation}{One of "semiparametric" or "nonparametric". Determines
 distribution from which imputed values are drawn. See

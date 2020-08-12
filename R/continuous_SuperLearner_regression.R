@@ -8,7 +8,8 @@
 #' @param SL.library Either a character vector of prediction algorithms or a
 #' list containing character vectors. A list of functions included in the
 #' SuperLearner package can be found with SuperLearner::listWrappers().
-#' @param bw Numeric value for bandwidth to be used in the kernel function
+#' @param bw NULL or numeric value for bandwidth of kernel function (as standard deviations of the kernel).
+#' @param lambda NULL or numeric value for bandwidth for kernel (as half-width of the kernel).
 #' @param imputation One of "semiparametric" or "nonparametric". Determines
 #' distribution from which imputed values are drawn. See
 #' mice.impute.SuperLearner() documentation for more details.
@@ -20,7 +21,7 @@
 
 
 #Continuous SuperLearner Regression
-continuous.SuperLearner <- function(y, x, wy, SL.library, kernel, bw,
+continuous.SuperLearner <- function(y, x, wy, SL.library, kernel, bw, lambda,
                                     imputation, weights, ...){
   newdata <- data.frame(x)
   names(newdata) <- sapply(1:ncol(newdata), function(n){paste0("x", n)})
@@ -39,16 +40,16 @@ continuous.SuperLearner <- function(y, x, wy, SL.library, kernel, bw,
   sl <- do.call(SuperLearner, args[names(args) != "parallel"])
   sl.preds <- predict.SuperLearner(object = sl, newdata = newdata, X = X, Y = Y,
                                    TRUE)$pred
-  if(method.weights){
-    .GlobalEnv$superMICE.weights <- c(.GlobalEnv$superMICE.weights,
-                                      list(sl$coef))
-  }
+  # if(method.weights){
+  #   .GlobalEnv$superMICE.weights <- c(.GlobalEnv$superMICE.weights,
+  #                                     list(sl$coef))
+  # }
 
-  sapply(1:sum(wy), localImputation, x = sl.preds, y = y,
+  sapply(1:sum(wy), localImputation, preds = sl.preds, y = y,
          delta = as.numeric(!wy),
-         bw = bw,
+         bw = bw, lambda = lambda,
          imputation = "semiparametric",
-         kernel = "gaussian",
+         kernel = kernel,
          weights ="nadaraya-watson")
   # if(SL.CV){
   #   cv.sl = do.call(CV.SuperLearner, args)
