@@ -16,13 +16,40 @@
 
 
 localImputation <- function(i, preds, y, delta, bw = NULL, lambda = NULL,
-                            imputation = c("semiparametric", "nonparametric"),
+                            imputation = c("semiparametric.SL", "semiparametric", "nonparametric"),
                             kernel = c("gaussian", "uniform", "triangular"),
                             weights = c("nadaraya-watson")){
-  if(is.null(bw) & is.null(lambda)){
-    difs = abs(preds[delta == 1] - preds[delta == 0][i])
-    lambda = difs[order(difs)][ceiling(log(length(difs)))] /
-      sd(preds[delta == 1])
+  if((is.null(bw) & is.null(lambda))|is.character(bw)){
+    if(bw == "type1"){
+      difs = abs(preds[delta == 1] - preds[delta == 0][i])
+      lambda = difs[order(difs)][ceiling(log(length(difs)))] /
+        sd(preds[delta == 1])
+    }
+    else if(bw == "type2"){
+      difs = abs(preds - preds[delta == 0][i])
+      lambda = difs[order(difs)][ceiling(log(length(difs)))] /
+        sd(preds)
+    }
+    else if(bw == "type3"){
+      difs = abs(preds[delta == 1] - preds[delta == 0][i])
+      lambda = quantile(difs, probs = 0.01) /
+        sd(preds[delta == 1])
+    }
+    else if(bw == "type4"){
+      difs = abs(preds - preds[delta == 0][i])
+      lambda = quantile(difs, probs = 0.01) /
+        sd(preds)
+    }
+    else if(bw == "type5"){
+      difs = abs(preds[delta == 1] - preds[delta == 0][i])
+      lambda = difs[order(difs)][10] /
+        sd(preds[delta == 1])
+    }
+    else if(bw == "type6"){
+      difs = abs(preds - preds[delta == 0][i])
+      lambda = difs[order(difs)][10] /
+        sd(preds)
+    }
   }
 
   if(kernel == "gaussian"){
@@ -47,10 +74,16 @@ localImputation <- function(i, preds, y, delta, bw = NULL, lambda = NULL,
     sample(y[delta == 1], size = 1, prob = weights[delta == 1] /
              sum(weights[delta == 1]))
   }
-  else{
+  else if(imputation == "semiparametric"){
     pihat = sum(kernVals * delta) / sum(kernVals)
     muhat = sum(weights * delta * y / pihat)
     sig2hat = sum(weights * delta * y^2 / pihat) - muhat^2
     rnorm(1, muhat, sqrt(sig2hat))
+  }
+  else if(imputation == "semiparametric.SL"){
+    pihat = sum(kernVals * delta) / sum(kernVals)
+    muhat = sum(weights * delta * y / pihat)
+    sig2hat = sum(weights * delta * y^2 / pihat) - muhat^2
+    rnorm(1, preds[delta == 0][i], sqrt(sig2hat))
   }
 }
