@@ -41,8 +41,8 @@
 #'   SL.lib <- c("SL.glm", "SL.glm.interaction", "SL.glmnet", "SL.loess")
 #'   imp.SL <- mice::mice(dat, m = 5, method = "SuperLearner",
 #'                          print = TRUE, SL.library = SL.lib,
-#'                          kernel = "gaussian", bw = 0.1,
-#'                          imputation = "semiparametric",
+#'                          kernel = "gaussian", bw = NULL,
+#'                          imputation = "semiparametricSL",
 #'                          weights = "nadaraya-watson")
 #'
 #' @export
@@ -55,7 +55,9 @@ mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
                                     kernel = c("gaussian", "uniform",
                                                "triangular"),
                                     bw = NULL, lambda = NULL,
-                                    imputation = "semiparametric",
+                                    imputation = c("semiparametricSL",
+                                                   "semiparametric",
+                                                   "nonparametric"),
                                     weights = "nadaraya-watson", ...){
   if(!requireNamespace("SuperLearner")){
     stop(simpleError('SuperLearner is not installed.'))

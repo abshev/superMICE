@@ -13,7 +13,7 @@ mice.impute.SuperLearner(
   kernel = c("gaussian", "uniform", "triangular"),
   bw = NULL,
   lambda = NULL,
-  imputation = "semiparametric",
+  imputation = c("semiparametricSL", "semiparametric", "nonparametric"),
   weights = "nadaraya-watson",
   ...
 )
@@ -73,8 +73,8 @@ algorithm.  This is done through a backend powered by either the
   SL.lib <- c("SL.glm", "SL.glm.interaction", "SL.glmnet", "SL.loess")
   imp.SL <- mice::mice(dat, m = 5, method = "SuperLearner",
                          print = TRUE, SL.library = SL.lib,
-                         kernel = "gaussian", bw = 0.1,
-                         imputation = "semiparametric",
+                         kernel = "gaussian", bw = NULL,
+                         imputation = "semiparametricSL",
                          weights = "nadaraya-watson")
 
 }

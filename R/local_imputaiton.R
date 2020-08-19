@@ -20,9 +20,11 @@ localImputation <- function(i, preds, y, delta, bw = NULL, lambda = NULL,
                             kernel = c("gaussian", "uniform", "triangular"),
                             weights = c("nadaraya-watson")){
   if(is.null(bw) & is.null(lambda)){
-    difs = abs(preds[delta == 1] - preds[delta == 0][i])
-    lambda = difs[order(difs)][ceiling(log(length(difs)))] /
-      sd(preds[delta == 1])
+    difs = abs(preds - preds[delta == 0][i])
+    lambda = min(difs[order(difs)][ceiling(log(length(difs)))] /
+      sd(preds),
+      difs[order(difs)][ceiling(length(difs) * 0.01)] /
+        sd(preds))
   }
 
   if(kernel == "gaussian"){
@@ -43,14 +45,20 @@ localImputation <- function(i, preds, y, delta, bw = NULL, lambda = NULL,
   # if(weights == "biasedBootstrapWeights"){
   #
   # }
-  if(imputation == "nonparametric"){
-    sample(y[delta == 1], size = 1, prob = weights[delta == 1] /
-             sum(weights[delta == 1]))
+  if(imputation == "semiparametricSL"){
+    pihat = sum(kernVals * delta) / sum(kernVals)
+    muhat = sum(weights * delta * y / pihat)
+    sig2hat = sum(weights * delta * y^2 / pihat) - muhat^2
+    rnorm(1, preds[delta == 0][i], sqrt(sig2hat))
   }
-  else{
+  else if(imputation == "semiparametric"){
     pihat = sum(kernVals * delta) / sum(kernVals)
     muhat = sum(weights * delta * y / pihat)
     sig2hat = sum(weights * delta * y^2 / pihat) - muhat^2
     rnorm(1, muhat, sqrt(sig2hat))
+  }
+  else if(imputation == "nonparametric"){
+    sample(y[delta == 1], size = 1, prob = weights[delta == 1] /
+             sum(weights[delta == 1]))
   }
 }
