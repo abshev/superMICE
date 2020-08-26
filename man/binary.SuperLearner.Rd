@@ -4,14 +4,12 @@
 \alias{binary.SuperLearner}
 \title{Function to generate imputations using SuperLearner for data with a binary outcome.}
 \usage{
-binary.SuperLearner(Y, X, newdata, SL.library, ...)
+binary.SuperLearner(Y, X, SL.library, ...)
 }
 \arguments{
 \item{Y}{Vector of observed values of the variable to be imputed.}
 
 \item{X}{Numeric matrix of variables to be used as predictors in SuperLearner methods with rows corresponding to values in Y.}
-
-\item{newdata}{Numeric matrix of variables to as predictors in SuperLearner methods with rows corresponding to missing values of the variable to be imputed. The SuperLearner model makes predictions from this matrix to determine the imputation-generating distribution.}
 
 \item{SL.library}{Either a character vector of prediction algorithms or a list containing character vectors. A list of functions included in the SuperLearner package can be found with SuperLearner::listWrappers().}
 
