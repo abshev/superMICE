@@ -1,7 +1,7 @@
 #' Function to generate imputations using SuperLearner for data with a binary outcome.
 #'
-#' @param Y Vector of observed values of the variable to be imputed.
-#' @param X Numeric matrix of variables to be used as predictors in SuperLearner methods with rows corresponding to values in Y.
+#' @param y Vector of observed values of the variable to be imputed.
+#' @param x Numeric matrix of variables to be used as predictors in SuperLearner methods with rows corresponding to values in Y.
 #' @param wy blah
 #' @param SL.library Either a character vector of prediction algorithms or a list containing character vectors. A list of functions included in the SuperLearner package can be found with SuperLearner::listWrappers().
 #' @param ... Further arguments passed to SuperLearner.
