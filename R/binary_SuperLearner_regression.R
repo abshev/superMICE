@@ -27,10 +27,10 @@ binary.SuperLearner = function(y, x, wy, SL.library, ...){
   }
   args$type = NULL
   sl <- do.call(SuperLearner, args[names(args) != "parallel"])
-  # if(method.weights){
-  #   .GlobalEnv$superMICE.weights <- c(.GlobalEnv$superMICE.weights,
-  #                                     list(sl$coef))
-  # }
+  if(method.weights){
+    .GlobalEnv$superMICE.weights <- c(.GlobalEnv$superMICE.weights,
+                                      list(sl$coef))
+  }
   phat <- predict.SuperLearner(object = sl, newdata = newdata,
                                X = X, Y = Y, TRUE)$pred
   binaryImputations = rbinom(length(phat[wy]), 1, phat[wy])

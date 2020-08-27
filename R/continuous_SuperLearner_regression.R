@@ -40,10 +40,10 @@ continuous.SuperLearner <- function(y, x, wy, SL.library, kernel, bw, lambda,
   sl <- do.call(SuperLearner, args[names(args) != "parallel"])
   sl.preds <- predict.SuperLearner(object = sl, newdata = newdata, X = X, Y = Y,
                                    TRUE)$pred
-  # if(method.weights){
-  #   .GlobalEnv$superMICE.weights <- c(.GlobalEnv$superMICE.weights,
-  #                                     list(sl$coef))
-  # }
+  if(method.weights){
+    .GlobalEnv$superMICE.weights <- c(.GlobalEnv$superMICE.weights,
+                                      list(sl$coef))
+  }
 
   sapply(1:sum(wy), localImputation, preds = sl.preds, y = y,
          delta = as.numeric(!wy),

@@ -58,14 +58,15 @@ mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
                                     imputation = c("semiparametricSL",
                                                    "semiparametric",
                                                    "nonparametric"),
-                                    weights = "nadaraya-watson", ...){
+                                    weights = "nadaraya-watson",
+                                    returnMethods = TRUE, ...){
   if(!requireNamespace("SuperLearner")){
     stop(simpleError('SuperLearner is not installed.'))
   }
 
-  # if(method.weights && is.null(.GlobalEnv$SuperMICE.weights)){
-  #   .GlobalEnv$SuperMICE.weights <- list()
-  # }
+  if(method.weights && is.null(.GlobalEnv$SuperMICE.weights)){
+    .GlobalEnv$SuperMICE.weights <- list()
+  }
 
   if (is.null(wy)){
     wy <- !ry
