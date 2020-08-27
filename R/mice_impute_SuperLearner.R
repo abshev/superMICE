@@ -59,12 +59,12 @@ mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
                                                    "semiparametric",
                                                    "nonparametric"),
                                     weights = "nadaraya-watson",
-                                    returnMethods = TRUE, ...){
+                                    return.method.weights = TRUE, ...){
   if(!requireNamespace("SuperLearner")){
     stop(simpleError('SuperLearner is not installed.'))
   }
 
-  if(method.weights && is.null(.GlobalEnv$SuperMICE.weights)){
+  if(return.method.weights && is.null(.GlobalEnv$SuperMICE.weights)){
     .GlobalEnv$SuperMICE.weights <- list()
   }
 
@@ -73,13 +73,17 @@ mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
   }
 
   if(length(unique(y)) == 2){
-    imps = binary.SuperLearner(y, x, wy, SL.library, ...)
+    imps = binary.SuperLearner(y, x, wy, SL.library,
+                               return.method.weights = return.method.weights,
+                               ...)
   }
   else if(class(y) == "numeric"){
     imps = continuous.SuperLearner(y, x, wy, SL.library, kernel = kernel,
-                                        bw = bw, lambda = lambda,
-                                        imputation = imputation,
-                                        weights = weights, ...)
+                                   bw = bw, lambda = lambda,
+                                   imputation = imputation,
+                                   weights = weights,
+                                   return.method.weights = return.method.weights,
+                                   ...)
   }
   else{
     stop(simpleError("Invalid data type for Super Learner Imputation.

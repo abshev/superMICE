@@ -12,7 +12,8 @@
 
 
 #Binary SuperLearner regression
-binary.SuperLearner = function(y, x, wy, SL.library, ...){
+binary.SuperLearner = function(y, x, wy, SL.library, return.method.weights,
+                               ...){
   newdata <- data.frame(x)
   names(newdata) <- sapply(1:ncol(newdata), function(n){paste0("x", n)})
 
@@ -27,7 +28,7 @@ binary.SuperLearner = function(y, x, wy, SL.library, ...){
   }
   args$type = NULL
   sl <- do.call(SuperLearner, args[names(args) != "parallel"])
-  if(method.weights){
+  if(return.method.weights){
     .GlobalEnv$superMICE.weights <- c(.GlobalEnv$superMICE.weights,
                                       list(sl$coef))
   }

@@ -22,7 +22,8 @@
 
 #Continuous SuperLearner Regression
 continuous.SuperLearner <- function(y, x, wy, SL.library, kernel, bw, lambda,
-                                    imputation, weights, ...){
+                                    imputation, weights, return.method.weights,
+                                    ...){
   newdata <- data.frame(x)
   names(newdata) <- sapply(1:ncol(newdata), function(n){paste0("x", n)})
 
@@ -40,7 +41,7 @@ continuous.SuperLearner <- function(y, x, wy, SL.library, kernel, bw, lambda,
   sl <- do.call(SuperLearner, args[names(args) != "parallel"])
   sl.preds <- predict.SuperLearner(object = sl, newdata = newdata, X = X, Y = Y,
                                    TRUE)$pred
-  if(method.weights){
+  if(return.method.weights){
     .GlobalEnv$superMICE.weights <- c(.GlobalEnv$superMICE.weights,
                                       list(sl$coef))
   }
