@@ -64,9 +64,9 @@ mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
     stop(simpleError('SuperLearner is not installed.'))
   }
 
-  if(return.method.weights && is.null(.GlobalEnv$superMICE.weights)){
-    .GlobalEnv$SuperMICE.weights <- list()
-  }
+  # if(return.method.weights && is.null(.GlobalEnv$superMICE.weights)){
+  #   .GlobalEnv$SuperMICE.weights <- list()
+  # }
 
   if (is.null(wy)){
     wy <- !ry
