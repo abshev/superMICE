@@ -33,11 +33,11 @@ continuous.SuperLearner <- function(y, x, wy, SL.library, kernel, bw, lambda,
   args <- c(list(Y = Y, X = X, family = stats::gaussian(),
                  SL.library = SL.library),
             list(...))
-  if(is.null(args$parallel)){
-    args$parallel = "seq"
-  }
+  # if(is.null(args$parallel)){
+  #   args$parallel = "seq"
+  # }
   args$type <- NULL
-  sl <- do.call(SuperLearner, args[names(args) != "parallel"])
+  sl <- do.call(SuperLearner, args) #[names(args) != "parallel"])
   sl.preds <- predict.SuperLearner(object = sl, newdata = newdata, X = X, Y = Y,
                                    TRUE)$pred
   # if(method.weights){

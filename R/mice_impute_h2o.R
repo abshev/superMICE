@@ -45,30 +45,38 @@
 #' @importFrom stats gaussian
 #' @importFrom stats binomial
 
-mice.impute.h2o.norm = function(y, ry, x, wy = NULL, h2o.models, ...){
+mice.impute.h2o.norm = function(y, ry, x, wy = NULL, h2o.models,
+                                kernel = c("gaussian", "uniform",
+                                           "triangular"),
+                                bw = NULL, lambda = NULL,
+                                imputation = c("semiparametricSL",
+                                               "semiparametric",
+                                               "nonparametric"),
+                                weights = "nadaraya-watson",
+                                return.method.weights = TRUE, ...){
   if(!requireNamespace("h2o")){
     stop(simpleError('h2o is not installed.'))
   }
 
+  # if(method.weights && is.null(.GlobalEnv$SuperMICE.weights)){
+  #   .GlobalEnv$SuperMICE.weights <- list()
+  # }
+
   if (is.null(wy)){
     wy <- !ry
   }
-  newdata <- data.frame(x[wy,])
-  names(newdata) = sapply(1:ncol(newdata), function(n){paste0("x", n)})
-
-  X <- data.frame(x[!wy,])
-  names(X) = sapply(1:ncol(newdata), function(n){paste0("x", n)})
-  Y <- y[!wy]
 
   if(length(unique(y)) == 2){
-    imps = binary.H2O.norm(Y, X, newdata, SL.library)
+    imps = binary.H2O(y, x, wy, SL.library, ...)
   }
   else if(class(y) == "numeric"){
-    imps = continuous.H2O.norm(Y, X, newdata, SL.library)
+    imps = continuous.H2O(y, x, wy, SL.library, kernel = kernel,
+                                   bw = bw, lambda = lambda,
+                                   imputation = imputation,
+                                   weights = weights, ...)
   }
   else{
     stop(simpleError("Invalid data type for Super Learner Imputation.
           Use only numeric or factors with two levels (binary) data types."))
   }
-  return(imps)
-}
+  return(imps)}
