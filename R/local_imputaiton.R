@@ -16,16 +16,22 @@
 
 
 localImputation <- function(i, preds, y, delta, bw = NULL, lambda = NULL,
-                            imputation = c("semiparametric", "nonparametric"),
+                            imputation = c("semiparametricSL", "semiparametric",
+                                           "nonparametric"),
                             kernel = c("gaussian", "uniform", "triangular"),
                             weights = c("nadaraya-watson")){
-  if(is.null(bw) & is.null(lambda)){
-    difs = abs(preds - preds[delta == 0][i])
-    lambda = min(difs[order(difs)][ceiling(log(length(difs)))] /
-      sd(preds),
-      difs[order(difs)][ceiling(length(difs) * 0.01)] /
-        sd(preds))
-  }
+  # if(is.null(bw) & is.null(lambda)){
+  #   difs = abs(preds - preds[delta == 0][i])
+  #   lambda = min(difs[order(difs)][ceiling(log(length(difs)))] /
+  #     sd(preds),
+  #     difs[order(difs)][ceiling(length(difs) * 0.01)] /
+  #       sd(preds))
+  # }
+
+  bw = bandwidth_jackknife_selection(bwGrid = bw, i = i, preds = preds, y = y,
+                                delta = delta, lambda = lambda,
+                                imputation = imputation, kernel = kernel,
+                                weights = weights)
 
   if(kernel == "gaussian"){
     kernVals = gaussianKernel(x = preds, xcenter = preds[delta == 0][i],

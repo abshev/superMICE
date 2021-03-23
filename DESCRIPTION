@@ -1,7 +1,7 @@
 Package: superMICE
 Type: Package
 Title: SuperLearner Method for MICE
-Version: 0.4.5
+Version: 0.5.0
 Author: Aaron B. Shev
 Maintainer: Aaron B. Shev <abshev@ucdavis.edu>
 Description: This humble package adds a Super Learner ensemble model method using 

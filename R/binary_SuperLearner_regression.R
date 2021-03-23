@@ -33,7 +33,7 @@ binary.SuperLearner = function(y, x, wy, SL.library, ...){
   # }
   phat <- predict.SuperLearner(object = sl, newdata = newdata,
                                X = X, Y = Y, TRUE)$pred
-  binaryImputations = rbinom(length(phat[wy]), 1, phat[wy])
+  binaryImputations = stats::rbinom(length(phat[wy]), 1, phat[wy])
   if(is.factor(Y)){
     return(levels(Y)[binaryImputations + 1])
   }

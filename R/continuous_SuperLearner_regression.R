@@ -48,7 +48,7 @@ continuous.SuperLearner <- function(y, x, wy, SL.library, kernel, bw, lambda,
   sapply(1:sum(wy), localImputation, preds = sl.preds, y = y,
          delta = as.numeric(!wy),
          bw = bw, lambda = lambda,
-         imputation = "semiparametric",
+         imputation = imputation,
          kernel = kernel,
          weights ="nadaraya-watson")
   # if(SL.CV){
