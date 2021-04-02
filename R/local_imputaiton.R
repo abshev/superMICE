@@ -28,22 +28,22 @@ localImputation <- function(i, preds, y, delta, bw = NULL, lambda = NULL,
   #       sd(preds))
   # }
 
-  bw = bandwidth_jackknife_selection(bwGrid = bw, i = i, preds = preds, y = y,
-                                delta = delta, lambda = lambda,
-                                imputation = imputation, kernel = kernel,
-                                weights = weights)
+  # bw = bandwidth.jackknife.selection(bwGrid = bw, i = i, preds = preds, y = y,
+  #                               delta = delta, lambda = lambda,
+  #                               imputation = imputation, kernel = kernel,
+  #                               weights = weights)
 
   if(kernel == "gaussian"){
     kernVals = gaussianKernel(x = preds, xcenter = preds[delta == 0][i],
-                              bw = bw, lambda = lambda)
+                              bw = bw[[i]], lambda = lambda)
   }
   else if(kernel == "uniform"){
     kernVals = uniformKernel(x = preds, xcenter = preds[delta == 0][i],
-                             bw = bw, lambda = lambda)
+                             bw = bw[[i]], lambda = lambda)
   }
   else if(kernel == "triangular"){
     kernVals = triangularKernel(x = preds, xcenter = preds[delta == 0][i],
-                                bw = bw, lambda = lambda)
+                                bw = bw[[i]], lambda = lambda)
   }
   if(weights == "nadaraya-watson"){
     weights = kernVals / sum(kernVals)

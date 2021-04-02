@@ -2,7 +2,8 @@
 
 export(mice.impute.SuperLearner)
 import(SuperLearner)
-import(h2o)
+importFrom(Rfast,colmeans)
+importFrom(Rfast,colsums)
 importFrom(stats,binomial)
 importFrom(stats,dnorm)
 importFrom(stats,gaussian)

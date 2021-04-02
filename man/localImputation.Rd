@@ -11,7 +11,7 @@ localImputation(
   delta,
   bw = NULL,
   lambda = NULL,
-  imputation = c("semiparametric", "nonparametric"),
+  imputation = c("semiparametricSL", "semiparametric", "nonparametric"),
   kernel = c("gaussian", "uniform", "triangular"),
   weights = c("nadaraya-watson")
 )

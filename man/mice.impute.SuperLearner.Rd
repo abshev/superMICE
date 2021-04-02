@@ -61,7 +61,7 @@ algorithm.  This is done through a backend powered by either the
 \code{SuperLearner} package or H2O.
 }
 \examples{
-  n <- 1000
+  n <- 100
   pmissing <- 0.10
   x1 = runif(n, min = -3, max = 3)
   x2 = x1^2 + rnorm(n, mean = 0, sd = 1)

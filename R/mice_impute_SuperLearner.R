@@ -29,7 +29,7 @@
 #' @return Vector with imputed data, same type as y, and of length sum(wy)
 #'
 #' @examples
-#'   n <- 1000
+#'   n <- 100
 #'   pmissing <- 0.10
 #'   x1 = runif(n, min = -3, max = 3)
 #'   x2 = x1^2 + rnorm(n, mean = 0, sd = 1)
@@ -48,7 +48,6 @@
 #'
 #' @export
 #' @import SuperLearner
-#' @import h2o
 #' @importFrom stats gaussian
 #' @importFrom stats binomial
 

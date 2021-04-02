@@ -11,24 +11,25 @@
 #' @param weights blah
 #' @return bandwidth
 #'
-#' @importFrom stats dnorm
+#' @importFrom Rfast colsums
+#' @importFrom Rfast colmeans
 
-bandwidth_jackknife_selection = function(bwGrid, i, preds, y, delta,
+jackknife.bandwidth.selection = function(i, bwGrid, preds, y, delta,
                                          lambda = NULL, imputation, kernel,
                                          weights){
   if(kernel == "gaussian"){
     kernGrid = lapply(bwGrid, gaussianKernel, x = preds,
-                        xcenter = preds[delta == 0][i], lambda = lambda)
+                        xcenter = preds[i], lambda = lambda)
   }
 
   if(kernel == "uniform"){
     kernGrid = lapply(bwGrid, uniformKernel, x = preds,
-                        xcenter = preds[delta == 0][i], lambda = lambda)
+                        xcenter = preds[i], lambda = lambda)
   }
 
   if(kernel == "triangular"){
     kernGrid = lapply(bwGrid, triangularKernel, x = preds,
-                        xcenter = preds[delta == 0][i], lambda = lambda)
+                        xcenter = preds[i], lambda = lambda)
   }
   kernGrid = do.call(cbind, kernGrid)[-i,]
   n = nrow(kernGrid)
@@ -38,27 +39,36 @@ bandwidth_jackknife_selection = function(bwGrid, i, preds, y, delta,
   }
 
   if(imputation == "semiparametricSL"){
-    pihat.fullData = colSums(kernGrid * delta[-i]) / colSums(kernGrid)
-    muhat.fullData = colSums(weightGrid * delta[-i] * y[-i]) / pihat.fullData
+    pihat.fullData = colsums(kernGrid * delta[-i]) / colsums(kernGrid)
+    muhat.fullData = colsums(weightGrid * delta[-i] * y[-i]) / pihat.fullData
     # sig2hat.fullData = colSums(weightGrid * delta * y^2 / pihat.fullData) -
     #   muhat.fullData^2
+    kernGridSums = colsums(kernGrid)
+    kernGridSums2 = colsums(kernGrid * delta[-i])
+    weightGridSums = colsums(weightGrid * delta[-i] * y[-i])
 
     muhat.jk = lapply(1:nrow(kernGrid), function(j, kernGrid, weightGrid,
-                                                  delta, y){
-      pihat.jk = colSums(kernGrid[-j,] * delta[-j]) / colSums(kernGrid[-j,])
-      colSums(weightGrid[-j,] * delta[-j] * y[-j]) / pihat.jk
+                                                 delta, y, kernGridSums,
+                                                 kernGridSums2,
+                                                 weightGridSums){
+      pihat.jk = (kernGridSums2 - kernGrid[j,] * delta[j]) /
+        (kernGridSums - kernGrid[j,])
+      # pihat.jk = Rfast::colsums(kernGrid[-j,] * delta[-j]) / Rfast::colsums(kernGrid[-j,])
+      (weightGridSums - weightGrid[j,] * delta[j] * y[j]) / pihat.jk
+      # Rfast::colsums(weightGrid[-j,] * delta[-j] * y[-j]) / pihat.jk
       # colSums(weightGrid[-j,] * delta * y^2 / pihat.jk) - muhat.jk^2
     }, kernGrid = kernGrid, weightGrid = weightGrid, delta = delta[-i],
-    y = y[-i])
+    y = y[-i], kernGridSums = kernGridSums, kernGridSums2 = kernGridSums2,
+    weightGridSums = weightGridSums)
     # sig2hat.jk = do.call(rbind, sig2hat.jk)
     muhat.jk = do.call(rbind, muhat.jk)
 
-    muhat.jk = ((n^(4 / 5)) * (matrix(1, nrow = n, ncol = 1) %*% muhat.fullData) -
-      ((n - 1)^(4 / 5)) * muhat.jk) / (n^(4/5) - (n - 1)^(4/5))
+    # muhat.jk = ((n^(4 / 5)) * (matrix(1, nrow = n, ncol = 1) %*% muhat.fullData) -
+    #   ((n - 1)^(4 / 5)) * muhat.jk) / (n^(4/5) - (n - 1)^(4/5))
 
-    bias2 = (muhat.fullData - colMeans(muhat.jk))^2
-    s2 = colSums((muhat.jk - (matrix(1, nrow = n, ncol = 1) %*%
-                                colMeans(muhat.jk)))^2) / (n * (n - 1))
+    bias2 = (muhat.fullData - colmeans(muhat.jk))^2
+    s2 = colsums((muhat.jk - (matrix(1, nrow = n, ncol = 1) %*%
+                                colmeans(muhat.jk)))^2) / (n * (n - 1))
     mse = bias2 + s2
 
     return(bwGrid[which.min(mse)])

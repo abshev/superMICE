@@ -45,6 +45,26 @@ continuous.SuperLearner <- function(y, x, wy, SL.library, kernel, bw, lambda,
   #                                     list(sl$coef))
   # }
 
+  if(class(bw) == "numeric"){
+    if(length(bw) == 1){
+      bw <- as.list(rep(bw, times = sum(wy)))
+    }
+    else if(length(bw) > 1){
+      bw <- sapply((1:length(y))[wy], jackknife.bandwidth.selection,
+                   bwGrid = bw,
+                   preds = sl.preds,
+                   y = y,
+                   delta = as.numeric(!wy),
+                   lambda = lambda,
+                   imputation = imputation,
+                   kernel = kernel,
+                   weights = "nadaraya-watson")
+      bw <- as.list(bw)
+    }
+    p = parent.frame(2)
+    p$vars$bw <- bw
+  }
+
   sapply(1:sum(wy), localImputation, preds = sl.preds, y = y,
          delta = as.numeric(!wy),
          bw = bw, lambda = lambda,
