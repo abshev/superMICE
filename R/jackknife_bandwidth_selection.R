@@ -10,9 +10,6 @@
 #' @param kernel blah
 #' @param weights blah
 #' @return bandwidth
-#'
-#' @importFrom Rfast colsums
-#' @importFrom Rfast colmeans
 
 jackknife.bandwidth.selection = function(i, bwGrid, preds, y, delta,
                                          lambda = NULL, imputation, kernel,
@@ -39,13 +36,13 @@ jackknife.bandwidth.selection = function(i, bwGrid, preds, y, delta,
   }
 
   if(imputation == "semiparametricSL"){
-    pihat.fullData = colsums(kernGrid * delta[-i]) / colsums(kernGrid)
-    muhat.fullData = colsums(weightGrid * delta[-i] * y[-i]) / pihat.fullData
+    pihat.fullData = colSums(kernGrid * delta[-i]) / colSums(kernGrid)
+    muhat.fullData = colSums(weightGrid * delta[-i] * y[-i]) / pihat.fullData
     # sig2hat.fullData = colSums(weightGrid * delta * y^2 / pihat.fullData) -
     #   muhat.fullData^2
-    kernGridSums = colsums(kernGrid)
-    kernGridSums2 = colsums(kernGrid * delta[-i])
-    weightGridSums = colsums(weightGrid * delta[-i] * y[-i])
+    kernGridSums = colSums(kernGrid)
+    kernGridSums2 = colSums(kernGrid * delta[-i])
+    weightGridSums = colSums(weightGrid * delta[-i] * y[-i])
 
     muhat.jk = lapply(1:nrow(kernGrid), function(j, kernGrid, weightGrid,
                                                  delta, y, kernGridSums,
@@ -66,9 +63,9 @@ jackknife.bandwidth.selection = function(i, bwGrid, preds, y, delta,
     # muhat.jk = ((n^(4 / 5)) * (matrix(1, nrow = n, ncol = 1) %*% muhat.fullData) -
     #   ((n - 1)^(4 / 5)) * muhat.jk) / (n^(4/5) - (n - 1)^(4/5))
 
-    bias2 = (muhat.fullData - colmeans(muhat.jk))^2
-    s2 = colsums((muhat.jk - (matrix(1, nrow = n, ncol = 1) %*%
-                                colmeans(muhat.jk)))^2) / (n * (n - 1))
+    bias2 = (muhat.fullData - colMeans(muhat.jk))^2
+    s2 = colSums((muhat.jk - (matrix(1, nrow = n, ncol = 1) %*%
+                                colMeans(muhat.jk)))^2) / (n * (n - 1))
     mse = bias2 + s2
 
     return(bwGrid[which.min(mse)])

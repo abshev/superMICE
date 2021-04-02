@@ -2,8 +2,6 @@
 
 export(mice.impute.SuperLearner)
 import(SuperLearner)
-importFrom(Rfast,colmeans)
-importFrom(Rfast,colsums)
 importFrom(stats,binomial)
 importFrom(stats,dnorm)
 importFrom(stats,gaussian)
