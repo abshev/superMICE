@@ -9,6 +9,7 @@
 #' list containing character vectors. A list of functions included in the
 #' SuperLearner package can be found with SuperLearner::listWrappers().
 #' @param bw NULL or numeric value for bandwidth of kernel function (as standard deviations of the kernel).
+#' @param bw.update eriogjaoier
 #' @param lambda NULL or numeric value for bandwidth for kernel (as half-width of the kernel).
 #' @param imputation One of "semiparametric" or "nonparametric". Determines
 #' distribution from which imputed values are drawn. See
@@ -21,8 +22,8 @@
 
 
 #Continuous SuperLearner Regression
-continuous.SuperLearner <- function(y, x, wy, SL.library, kernel, bw, lambda,
-                                    imputation, weights, ...){
+continuous.SuperLearner <- function(y, x, wy, SL.library, kernel, bw, bw.update,
+                                    lambda, imputation, weights, ...){
   newdata <- data.frame(x)
   names(newdata) <- sapply(1:ncol(newdata), function(n){paste0("x", n)})
 
@@ -45,25 +46,40 @@ continuous.SuperLearner <- function(y, x, wy, SL.library, kernel, bw, lambda,
   #                                     list(sl$coef))
   # }
 
-  if(class(bw) == "numeric"){
-    if(length(bw) == 1){
-      bw <- as.list(rep(bw, times = sum(wy)))
+  if(!bw.update){
+    if(class(bw) == "numeric"){
+      if(length(bw) == 1){
+        bw <- as.list(rep(bw, times = sum(wy)))
+      }
+      else if(length(bw) > 1){
+        bw <- sapply((1:length(y))[wy], jackknife.bandwidth.selection,
+                     bwGrid = bw,
+                     preds = sl.preds,
+                     y = y,
+                     delta = as.numeric(!wy),
+                     lambda = lambda,
+                     imputation = imputation,
+                     kernel = kernel,
+                     weights = "nadaraya-watson")
+        bw <- as.list(bw)
+      }
+      p = parent.frame(2)
+      p$args$bw <- bw
     }
-    else if(length(bw) > 1){
-      bw <- sapply((1:length(y))[wy], jackknife.bandwidth.selection,
-                   bwGrid = bw,
-                   preds = sl.preds,
-                   y = y,
-                   delta = as.numeric(!wy),
-                   lambda = lambda,
-                   imputation = imputation,
-                   kernel = kernel,
-                   weights = "nadaraya-watson")
-      bw <- as.list(bw)
-    }
-    p = parent.frame(2)
-    p$vars$bw <- bw
   }
+  else{
+    bw <- sapply((1:length(y))[wy], jackknife.bandwidth.selection,
+                 bwGrid = bw,
+                 preds = sl.preds,
+                 y = y,
+                 delta = as.numeric(!wy),
+                 lambda = lambda,
+                 imputation = imputation,
+                 kernel = kernel,
+                 weights = "nadaraya-watson")
+    bw <- as.list(bw)
+  }
+
 
   sapply(1:sum(wy), localImputation, preds = sl.preds, y = y,
          delta = as.numeric(!wy),

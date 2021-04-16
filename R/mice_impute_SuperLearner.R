@@ -20,6 +20,7 @@
 #' @param kernel One of "gaussian", "uniform", "triangular".  Kernel function
 #' used to compute weights.
 #' @param bw NULL or numeric value for bandwidth of kernel function (as standard deviations of the kernel).
+#' @param bw.update jefeaerg
 #' @param lambda NULL or numeric value for bandwidth for kernel (as half-width of the kernel).
 #' @param imputation One of "semiparametric" or "nonparametric". Determines
 #' distribution from which imputed values are drawn. See
@@ -56,6 +57,7 @@ mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
                                                "triangular"),
                                     bw = c(0.1, 0.2, 0.25, 0.3, 0.5, 1, 2.5,
                                            5, 10, 20),
+                                    bw.update = TRUE,
                                     lambda = NULL,
                                     imputation = c("semiparametricSL",
                                                    "semiparametric",
@@ -78,9 +80,9 @@ mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
   }
   else if(class(y) == "numeric"){
     imps = continuous.SuperLearner(y, x, wy, SL.library, kernel = kernel,
-                                        bw = bw, lambda = lambda,
-                                        imputation = imputation,
-                                        weights = weights, ...)
+                                   bw = bw, bw.update = bw.update,
+                                   lambda = lambda, imputation = imputation,
+                                   weights = weights, ...)
   }
   else{
     stop(simpleError("Invalid data type for Super Learner Imputation.
