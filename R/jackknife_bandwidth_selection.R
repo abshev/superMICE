@@ -36,8 +36,8 @@ jackknife.bandwidth.selection = function(i, bwGrid, preds, y, delta,
   }
 
   if(imputation == "semiparametricSL"){
-    pihat.fullData = colSums(kernGrid * delta[-i]) / colSums(kernGrid)
-    muhat.fullData = colSums(weightGrid * delta[-i] * y[-i]) / pihat.fullData
+    # pihat.fullData = colSums(kernGrid * delta[-i]) / colSums(kernGrid)
+    # muhat.fullData = colSums(weightGrid * delta[-i] * y[-i]) / pihat.fullData
     # sig2hat.fullData = colSums(weightGrid * delta * y^2 / pihat.fullData) -
     #   muhat.fullData^2
     kernGridSums = colSums(kernGrid)
@@ -63,9 +63,11 @@ jackknife.bandwidth.selection = function(i, bwGrid, preds, y, delta,
     # muhat.jk = ((n^(4 / 5)) * (matrix(1, nrow = n, ncol = 1) %*% muhat.fullData) -
     #   ((n - 1)^(4 / 5)) * muhat.jk) / (n^(4/5) - (n - 1)^(4/5))
 
-    bias2 = (muhat.fullData - colMeans(muhat.jk))^2
-    s2 = colSums((muhat.jk - (matrix(1, nrow = n, ncol = 1) %*%
-                                colMeans(muhat.jk)))^2) / (n * (n - 1))
+    # bias2 = (muhat.fullData - colMeans(muhat.jk))^2
+    # s2 = colSums((muhat.jk - (matrix(1, nrow = n, ncol = 1) %*%
+    #                             colMeans(muhat.jk)))^2) / (n * (n - 1))
+    bias2 = (preds[i] - colMeans(muhat.jk))^2
+    s2 = colSums((muhat.jk - preds[i])^2) / (n * (n - 1))
     mse = bias2 + s2
 
     return(bwGrid[which.min(mse)])
