@@ -61,7 +61,10 @@ mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
                                     lambda = NULL,
                                     imputation = c("semiparametricSL",
                                                    "semiparametric",
-                                                   "nonparametric"),
+                                                   "nonparametric",
+                                                   "momSL",
+                                                   "knn",
+                                                   "pnn"),
                                     weights = "nadaraya-watson", ...){
   if(!requireNamespace("SuperLearner")){
     stop(simpleError('SuperLearner is not installed.'))
