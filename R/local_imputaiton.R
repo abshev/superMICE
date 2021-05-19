@@ -52,20 +52,22 @@ localImputation <- function(i, preds, y, delta, bw = NULL, lambda = NULL,
     #    bw = bw[[i]])
     # }
     if(weights == "nadaraya-watson"){
-      weights = (kernVals * delta) / sum((kernVals * delta))
+      weights = (kernVals) / sum((kernVals))
     }
     # if(weights == "biasedBootstrapWeights"){
     #
     # }
     if(imputation == "semiparametricSL"){
-      # pihat = sum(kernVals * delta) / sum(kernVals)
-      # muhat = sum(weights * delta * y / pihat)
+      pihat = sum(kernVals * delta) / sum(kernVals)
+      muhat = sum(weights * delta * y / pihat)
+      mu2hat = sum(weights * delta * y^2 / pihat)
+      sig2hat = mu2hat - muhat^2
       # sig2hat = sum(weights * delta * (y - muhat)^2)
       # sig2hat = sum(weights * delta * (preds[,1] - preds[delta == 0][i])^2)
       # sig2hat = (sum(weights) / (sum(weights)^2 - sum(weights^2))) *
       #   sum(weights * (preds[,1] - preds[delta == 0][i])^2)
       # sig2hat = var(y[weights != 0])
-      sig2hat = sum(weights * (preds[,1] - sum(preds[,1] * weights))^2)
+      # sig2hat = sum(weights * (preds[,1] - sum(preds[,1] * weights))^2)
       # sig2hat = sum(weights * delta * y^2 / pihat) - muhat^2
       rnorm(1, preds[delta == 0][i], sqrt(sig2hat))
     }

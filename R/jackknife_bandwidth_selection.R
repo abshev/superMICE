@@ -32,7 +32,7 @@ jackknife.bandwidth.selection = function(i, bwGrid, preds, y, delta,
   n = nrow(kernMatrix)
   m = length(bwGrid)
 
-  weight.numerator = kernMatrix * matrix(delta, nrow = n, ncol = m)
+  weight.numerator = kernMatrix# * matrix(delta, nrow = n, ncol = m)
   weight.denominator = colSums(weight.numerator)
   weightMatrix = weight.numerator / matrix(weight.denominator, nrow = n,
                                            ncol = m, byrow = TRUE)
@@ -43,8 +43,10 @@ jackknife.bandwidth.selection = function(i, bwGrid, preds, y, delta,
   # }
 
   if(imputation == "semiparametricSL"){
-    # pihat.fullData = colSums(kernGrid * delta[-i]) / colSums(kernGrid)
-    # muhat.fullData = colSums(weightGrid * delta[-i] * y[-i]) / pihat.fullData
+    pihat.fullData = colSums(kernMatrix * delta) / colSums(kernMatrix)
+    muhat.fullData = colSums(weightMatrix * delta * y) / pihat.fullData
+    mu2hat.fullData = colSums(weightMatrix * delta * y^2) / pihat.fullData
+    sig2hat.fullData = mu2hat.fullData - muhat.fullData^2
     # sig2hat.fullData = colSums(weightGrid * delta[-i] *
     #                              (matrix(y[-i], ncol = m, nrow = n) -
     #                                 matrix(muhat.fullData, ncol = m, nrow = n,
@@ -60,7 +62,7 @@ jackknife.bandwidth.selection = function(i, bwGrid, preds, y, delta,
     #   var(y[w != 0])
     # }, y = y)
 
-    sig2hat.fullData = diag(t((preds[,1] - matrix((preds[,1] %*% weightMatrix)[1,], nrow = n, ncol = m, byrow = TRUE))^2) %*% weightMatrix)
+    # sig2hat.fullData = diag(t((preds[,1] - matrix((preds[,1] %*% weightMatrix)[1,], nrow = n, ncol = m, byrow = TRUE))^2) %*% weightMatrix)
 
     # sig2hat.fullData = colSums(weightGrid * delta * y^2 / pihat.fullData) -
     #   muhat.fullData^2
@@ -84,32 +86,50 @@ jackknife.bandwidth.selection = function(i, bwGrid, preds, y, delta,
     # sig2hat.jk = do.call(rbind, sig2hat.jk)
     # muhat.jk = do.call(rbind, muhat.jk)
 
-    sig2hat.jk = lapply((1:n)[delta == 1], function(j, #sig2hat.fullData,
-                                                    weight.numerator,
-                                                    weight.denominator,
-                                                    # delta,
-                                                    y, m, n, preds, #muhat.jk,
-                                                    center){
-      newWeightMatrix = weight.numerator[-j,] /
-        matrix(weight.denominator - weight.numerator[j,], nrow = n - 1,
-               ncol = m, byrow = TRUE)
-      # ((preds[-j] - preds[i])^2) %*% newWeightMatrix
-      # (1 / (1 - colSums(newWeightMatrix^2))) *
-      #   ((preds[-j] - preds[i])^2) %*% newWeightMatrix
-      # apply(newWeightMatrix, 2, function(w, y){
-      #   var(y[-j][w != 0])
-      # }, y = y)
-      diag(t((preds[-j] - matrix((preds[-j] %*% newWeightMatrix)[1,], nrow = n - 1, ncol = m, byrow = TRUE))^2) %*% newWeightMatrix)
-      #colSums(newWeights * (y[-j] - center)^2)
-      # sig2hat.fullData - weightGrid2[j] * (y[j] - center)^2
-      # colSums(weightGrid2[-j,] * (y[-j] - center)^2)
-      # sig2hat.fullData - (weightGrid[j,] * delta[j] *
-      #   (rep(y[j], times = m) - muhat.jk[sum(delta[1:j]),])^2)
-    }, #sig2hat.fullData = sig2hat.fullData, weightGrid = weightGrid,
-    weight.numerator = weight.numerator,
-    weight.denominator = weight.denominator,
-    y = y, preds = preds[,1], center = preds[i], m = m, n = n)
+    # sig2hat.jk = lapply((1:n)[delta == 1], function(j, #sig2hat.fullData,
+    #                                                 weight.numerator,
+    #                                                 weight.denominator,
+    #                                                 # delta,
+    #                                                 y, m, n, preds, #muhat.jk,
+    #                                                 center){
+    #   newWeightMatrix = weight.numerator[-j,] /
+    #     matrix(weight.denominator - weight.numerator[j,], nrow = n - 1,
+    #            ncol = m, byrow = TRUE)
+    #
+    #
+    #   # ((preds[-j] - preds[i])^2) %*% newWeightMatrix
+    #   # (1 / (1 - colSums(newWeightMatrix^2))) *
+    #   #   ((preds[-j] - preds[i])^2) %*% newWeightMatrix
+    #   # apply(newWeightMatrix, 2, function(w, y){
+    #   #   var(y[-j][w != 0])
+    #   # }, y = y)
+    #   # diag(t((preds[-j] - matrix((preds[-j] %*% newWeightMatrix)[1,], nrow = n - 1, ncol = m, byrow = TRUE))^2) %*% newWeightMatrix)
+    #   #colSums(newWeights * (y[-j] - center)^2)
+    #   # sig2hat.fullData - weightGrid2[j] * (y[j] - center)^2
+    #   # colSums(weightGrid2[-j,] * (y[-j] - center)^2)
+    #   # sig2hat.fullData - (weightGrid[j,] * delta[j] *
+    #   #   (rep(y[j], times = m) - muhat.jk[sum(delta[1:j]),])^2)
+    # }, #sig2hat.fullData = sig2hat.fullData, weightGrid = weightGrid,
+    # weight.numerator = weight.numerator,
+    # weight.denominator = weight.denominator,
+    # y = y, preds = preds[,1], center = preds[i], m = m, n = n)
     #delta = delta[-i], y = y[-i], m = m, n = n, muhat.jk = muhat.jk, center = preds[i])
+
+    sig2hat.jk = lapply((1:n)[delta == 1], function(j, kernMatrix, n, m, delta, y){
+      newKernMatrix = kernMatrix[-j,]
+      newDelta = delta[-j]
+      newy = y[-j]
+      newWeight.numerator = newKernMatrix
+      newWeight.denominator = colSums(newWeight.numerator)
+      newWeightMatrix = weight.numerator / matrix(newWeight.denominator,
+                                                  nrow = n, ncol = m,
+                                                  byrow = TRUE)
+      pihat.jk = colSums(newKernMatrix * newDelta) / colSums(newKernMatrix)
+      muhat.jk = colSums(newWeightMatrix * newDelta * newy) / pihat.jk
+      mu2hat.jk = colSums(newWeightMatrix * delta * newy^2) / pihat.jk
+      mu2hat.jk - muhat.jk^2
+    }, kernMatrix = kernMatrix, n = n, m = m, delta = delta, y = y)
+
     sig2hat.jk = do.call(rbind, sig2hat.jk)
 
     # muhat.jk = ((n^(4 / 5)) * (matrix(1, nrow = n, ncol = 1) %*% muhat.fullData) -
