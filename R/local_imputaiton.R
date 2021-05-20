@@ -90,7 +90,28 @@ localImputation <- function(i, preds, y, delta, bw = NULL, lambda = NULL,
   else if(imputation == "pnn"){
     bw2 = ceiling(bw[[i]] * length(y))
     closest = y[delta == 1][order(abs(preds[delta == 1] - preds[delta == 0][i]))][1:bw2]
-    sig2hat = var(closest)
+
+    if(kernel == "gaussian"){
+      kernVals = gaussianKernel(x = preds, xcenter = preds[delta == 0][i],
+                                bw = abs(closest[bw2] - preds[delta == 0][i]),
+                                lambda = lambda)
+    }
+    else if(kernel == "uniform"){
+      kernVals = uniformKernel(x = preds, xcenter = preds[delta == 0][i],
+                               bw = abs(closest[bw2] - preds[delta == 0][i]),
+                               lambda = lambda)
+    }
+    else if(kernel == "triangular"){
+      kernVals = triangularKernel(x = preds, xcenter = preds[delta == 0][i],
+                                  bw = abs(closest[bw2] - preds[delta == 0][i]),
+                                  lambda = lambda)
+    }
+    # sig2hat = var(closest)
+    weights = (kernVals) / sum((kernVals))
+    pihat = sum(kernVals * delta) / sum(kernVals)
+    muhat = sum(weights * delta * y / pihat)
+    mu2hat = sum(weights * delta * y^2 / pihat)
+    sig2hat = mu2hat - muhat^2
     rnorm(1, preds[delta == 0][i], sqrt(sig2hat))
   }
   else if(imputation == "momSL"){
