@@ -45,12 +45,12 @@ continuous.SuperLearner <- function(y, x, wy, SL.library, kernel, bw, bw.update,
   #   .GlobalEnv$superMICE.weights <- c(.GlobalEnv$superMICE.weights,
   #                                     list(sl$coef))
   # }
-
-  if(length(bw) == 1 & class(bw) == "numeric"){
-    bw <- as.list(rep(bw, times = sum(wy)))
-  }
-  else if(!bw.update){
-    if(class(bw) == "numeric"){
+  if(imputation != "momSL"){
+    if(length(bw) == 1 & class(bw) == "numeric"){
+      bw <- as.list(rep(bw, times = sum(wy)))
+    }
+    else if(!bw.update){
+      if(class(bw) == "numeric"){
         bw <- sapply((1:length(y))[wy], jackknife.bandwidth.selection,
                      bwGrid = bw,
                      preds = sl.preds,
@@ -61,21 +61,31 @@ continuous.SuperLearner <- function(y, x, wy, SL.library, kernel, bw, bw.update,
                      kernel = kernel,
                      weights = "nadaraya-watson")
         bw <- as.list(bw)
+      }
+      p = parent.frame(2)
+      p$args$bw <- bw
     }
-    p = parent.frame(2)
-    p$args$bw <- bw
+    else{
+      bw <- sapply((1:length(y))[wy], jackknife.bandwidth.selection,
+                   bwGrid = bw,
+                   preds = sl.preds,
+                   y = y,
+                   delta = as.numeric(!wy),
+                   lambda = lambda,
+                   imputation = imputation,
+                   kernel = kernel,
+                   weights = "nadaraya-watson")
+      bw <- as.list(bw)
+    }
+    sl2.preds <- NULL
   }
+
   else{
-    bw <- sapply((1:length(y))[wy], jackknife.bandwidth.selection,
-                 bwGrid = bw,
-                 preds = sl.preds,
-                 y = y,
-                 delta = as.numeric(!wy),
-                 lambda = lambda,
-                 imputation = imputation,
-                 kernel = kernel,
-                 weights = "nadaraya-watson")
-    bw <- as.list(bw)
+    Y2 <- Y^2
+    args$Y = Y2
+    sl2 <- do.call(SuperLearner, args[names(args) != "parallel"])
+    sl2.preds <- predict.SuperLearner(object = sl2, newdata = newdata, X = X, Y = Y,
+                                     TRUE)$pred
   }
 
 
@@ -84,7 +94,8 @@ continuous.SuperLearner <- function(y, x, wy, SL.library, kernel, bw, bw.update,
          bw = bw, lambda = lambda,
          imputation = imputation,
          kernel = kernel,
-         weights ="nadaraya-watson")
+         weights ="nadaraya-watson",
+         preds2 = sl2.preds)
   # if(SL.CV){
   #   cv.sl = do.call(CV.SuperLearner, args)
   #   MSE <- summary(cv.sl)$Table$Ave[1]
