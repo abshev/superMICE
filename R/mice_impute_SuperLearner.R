@@ -1,8 +1,7 @@
 #' SuperLearner method for \code{mice} package.
 #'
 #' Method for the \code{mice} package that uses SuperLearner as the predctive
-#' algorithm.  This is done through a backend powered by either the
-#' \code{SuperLearner} package or H2O.
+#' algorithm.  Model fitting is done using the \code{SuperLearner} package.
 #'
 #' @param y Vector to be imputed
 #' @param ry Logical vector of length length(y) indicating the the subset y[ry]
@@ -22,7 +21,7 @@
 #' @param bw NULL or numeric value for bandwidth of kernel function (as standard deviations of the kernel).
 #' @param bw.update jefeaerg
 #' @param lambda NULL or numeric value for bandwidth for kernel (as half-width of the kernel).
-#' @param ... Further arguments passed to \code{SuperLearner} or \code{h2o}.
+#' @param ... Further arguments passed to \code{SuperLearner}.
 #' @return Vector with imputed data, same type as y, and of length sum(wy)
 #'
 #' @examples
