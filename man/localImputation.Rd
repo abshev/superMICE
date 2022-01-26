@@ -11,9 +11,7 @@ localImputation(
   delta,
   bw = NULL,
   lambda = NULL,
-  imputation = c("semiparametricSL", "semiparametric", "nonparametric"),
-  kernel = c("gaussian", "uniform", "triangular"),
-  weights = c("nadaraya-watson")
+  kernel = c("gaussian", "uniform", "triangular")
 )
 }
 \arguments{
@@ -29,11 +27,7 @@ localImputation(
 
 \item{lambda}{NULL or numeric value for bandwidth for kernel (as half-width of the kernel).}
 
-\item{imputation}{One of "semiparametric" or "nonparametric". Determines distribution from which imputed values are drawn. See mice.impute.SuperLearner() or mice.impute.h2o() for more details.}
-
 \item{kernel}{Kernel function used to compute weights.}
-
-\item{weights}{One of "nadaraya-watson", ...}
 }
 \value{
 Numeric vector of randomly drawn imputed values.

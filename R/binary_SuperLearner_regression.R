@@ -12,7 +12,7 @@
 
 
 #Binary SuperLearner regression
-binary.SuperLearner = function(y, x, wy, SL.library, ...){
+binarySuperLearner = function(y, x, wy, SL.library, ...){
   newdata <- data.frame(x)
   names(newdata) <- sapply(1:ncol(newdata), function(n){paste0("x", n)})
 

@@ -11,19 +11,15 @@
 #' @param bw NULL or numeric value for bandwidth of kernel function (as standard deviations of the kernel).
 #' @param bw.update eriogjaoier
 #' @param lambda NULL or numeric value for bandwidth for kernel (as half-width of the kernel).
-#' @param imputation One of "semiparametric" or "nonparametric". Determines
-#' distribution from which imputed values are drawn. See
-#' mice.impute.SuperLearner() documentation for more details.
 #' @param kernel One of "gaussian",...  Kernel function used to compute weights.
-#' @param weights One of "nadaraya-watson", ...
 #' @param ... further arguments passed to SuperLearner.
 #' @return Numeric vector of randomly drawn imputed values.
 #'
 
 
 #Continuous SuperLearner Regression
-continuous.SuperLearner <- function(y, x, wy, SL.library, kernel, bw, bw.update,
-                                    lambda, imputation, weights, ...){
+continuousSuperLearner <- function(y, x, wy, SL.library, kernel, bw, bw.update,
+                                    lambda, ...){
   newdata <- data.frame(x)
   names(newdata) <- sapply(1:ncol(newdata), function(n){paste0("x", n)})
 
@@ -41,40 +37,32 @@ continuous.SuperLearner <- function(y, x, wy, SL.library, kernel, bw, bw.update,
   sl <- do.call(SuperLearner, args[names(args) != "parallel"])
   sl.preds <- predict.SuperLearner(object = sl, newdata = newdata, X = X, Y = Y,
                                    TRUE)$pred
-  # if(method.weights){
-  #   .GlobalEnv$superMICE.weights <- c(.GlobalEnv$superMICE.weights,
-  #                                     list(sl$coef))
-  # }
 
   if(length(bw) == 1 & class(bw) == "numeric"){
     bw <- as.list(rep(bw, times = sum(wy)))
   }
   else if(!bw.update){
     if(class(bw) == "numeric"){
-        bw <- sapply((1:length(y))[wy], jackknife.bandwidth.selection,
+        bw <- sapply((1:length(y))[wy], jackknifeBandwidthSelection,
                      bwGrid = bw,
                      preds = sl.preds,
                      y = y,
                      delta = as.numeric(!wy),
                      lambda = lambda,
-                     imputation = imputation,
-                     kernel = kernel,
-                     weights = "nadaraya-watson")
+                     kernel = kernel)
         bw <- as.list(bw)
     }
     p = parent.frame(2)
     p$args$bw <- bw
   }
   else{
-    bw <- sapply((1:length(y))[wy], jackknife.bandwidth.selection,
+    bw <- sapply((1:length(y))[wy], jackknifeBandwidthSelection,
                  bwGrid = bw,
                  preds = sl.preds,
                  y = y,
                  delta = as.numeric(!wy),
                  lambda = lambda,
-                 imputation = imputation,
-                 kernel = kernel,
-                 weights = "nadaraya-watson")
+                 kernel = kernel)
     bw <- as.list(bw)
   }
 
@@ -82,17 +70,5 @@ continuous.SuperLearner <- function(y, x, wy, SL.library, kernel, bw, bw.update,
   sapply(1:sum(wy), localImputation, preds = sl.preds, y = y,
          delta = as.numeric(!wy),
          bw = bw, lambda = lambda,
-         imputation = imputation,
-         kernel = kernel,
-         weights ="nadaraya-watson")
-  # if(SL.CV){
-  #   cv.sl = do.call(CV.SuperLearner, args)
-  #   MSE <- summary(cv.sl)$Table$Ave[1]
-  #   sd <- sqrt(MSE * (1 + 1 / nrow(X)))
-  # }
-  # else{
-  #   MSE <- mean((sl$SL.predict - y[!wy])^2)
-  #   sd <- sqrt(MSE * (1 + 1 / nrow(X)))
-  # }
-  # rnorm(length(mu), mu, sd)
+         kernel = kernel)
 }

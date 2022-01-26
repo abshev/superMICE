@@ -12,9 +12,8 @@ mice.impute.SuperLearner(
   SL.library,
   kernel = c("gaussian", "uniform", "triangular"),
   bw = c(0.1, 0.2, 0.25, 0.3, 0.5, 1, 2.5, 5, 10, 20),
+  bw.update = TRUE,
   lambda = NULL,
-  imputation = c("semiparametricSL", "semiparametric", "nonparametric"),
-  weights = "nadaraya-watson",
   ...
 )
 }
@@ -42,13 +41,9 @@ used to compute weights.}
 
 \item{bw}{NULL or numeric value for bandwidth of kernel function (as standard deviations of the kernel).}
 
+\item{bw.update}{jefeaerg}
+
 \item{lambda}{NULL or numeric value for bandwidth for kernel (as half-width of the kernel).}
-
-\item{imputation}{One of "semiparametric" or "nonparametric". Determines
-distribution from which imputed values are drawn. See
-mice.impute.SuperLearner() documentation for more details.}
-
-\item{weights}{One of "nadaraya-watson", ...}
 
 \item{...}{Further arguments passed to \code{SuperLearner} or \code{h2o}.}
 }
@@ -74,8 +69,6 @@ algorithm.  This is done through a backend powered by either the
   imp.SL <- mice::mice(dat, m = 5, method = "SuperLearner",
                          print = TRUE, SL.library = SL.lib,
                          kernel = "gaussian",
-                         bw = c(0.1, 0.2, 0.25, 0.3, 0.5, 1, 2.5, 5, 10, 20),
-                         imputation = "semiparametricSL",
-                         weights = "nadaraya-watson")
+                         bw = c(0.1, 0.2, 0.25, 0.3, 0.5, 1, 2.5, 5, 10, 20))
 
 }

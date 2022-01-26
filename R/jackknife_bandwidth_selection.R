@@ -6,14 +6,11 @@
 #' @param y blah
 #' @param delta blah
 #' @param lambda blah
-#' @param imputation blah
 #' @param kernel blah
-#' @param weights blah
 #' @return bandwidth
 
-jackknife.bandwidth.selection = function(i, bwGrid, preds, y, delta,
-                                         lambda = NULL, imputation, kernel,
-                                         weights){
+jackknifeBandwidthSelection = function(i, bwGrid, preds, y, delta,
+                                         lambda = NULL, kernel){
   if(kernel == "gaussian"){
     kernGrid = lapply(bwGrid, gaussianKernel, x = preds,
                         xcenter = preds[i], lambda = lambda)
@@ -28,92 +25,31 @@ jackknife.bandwidth.selection = function(i, bwGrid, preds, y, delta,
     kernGrid = lapply(bwGrid, triangularKernel, x = preds,
                         xcenter = preds[i], lambda = lambda)
   }
-  kernGrid = do.call(cbind, kernGrid)[-i,]
-  n = nrow(kernGrid)
+  kernMatrix = do.call(cbind, kernGrid)
+  n = nrow(kernMatrix)
+  m = length(bwGrid)
 
-  if(weights == "nadaraya-watson"){
-    weightGrid = apply(kernGrid, 2, function(x){x / sum(x)})
-  }
+  weight.numerator = kernMatrix
+  weight.denominator = colSums(weight.numerator)
+  weightMatrix = weight.numerator / matrix(weight.denominator, nrow = n,
+                                           ncol = m, byrow = TRUE)
 
-  if(imputation == "semiparametricSL"){
-    # pihat.fullData = colSums(kernGrid * delta[-i]) / colSums(kernGrid)
-    # muhat.fullData = colSums(weightGrid * delta[-i] * y[-i]) / pihat.fullData
-    # sig2hat.fullData = colSums(weightGrid * delta * y^2 / pihat.fullData) -
-    #   muhat.fullData^2
-    kernGridSums = colSums(kernGrid)
-    kernGridSums2 = colSums(kernGrid * delta[-i])
-    weightGridSums = colSums(weightGrid * delta[-i] * y[-i])
+  pihat.fullData = colSums(kernMatrix * delta) / colSums(kernMatrix)
+  muhat.fullData = colSums(weightMatrix * delta * y) / pihat.fullData
+  mu2hat.fullData = colSums(weightMatrix * delta * y^2) / pihat.fullData
+  sig2hat.fullData = mu2hat.fullData - muhat.fullData^2
 
-    muhat.jk = lapply(1:nrow(kernGrid), function(j, kernGrid, weightGrid,
-                                                 delta, y, kernGridSums,
-                                                 kernGridSums2,
-                                                 weightGridSums){
-      pihat.jk = (kernGridSums2 - kernGrid[j,] * delta[j]) /
-        (kernGridSums - kernGrid[j,])
-      # pihat.jk = Rfast::colsums(kernGrid[-j,] * delta[-j]) / Rfast::colsums(kernGrid[-j,])
-      (weightGridSums - weightGrid[j,] * delta[j] * y[j]) / pihat.jk
-      # Rfast::colsums(weightGrid[-j,] * delta[-j] * y[-j]) / pihat.jk
-      # colSums(weightGrid[-j,] * delta * y^2 / pihat.jk) - muhat.jk^2
-    }, kernGrid = kernGrid, weightGrid = weightGrid, delta = delta[-i],
-    y = y[-i], kernGridSums = kernGridSums, kernGridSums2 = kernGridSums2,
-    weightGridSums = weightGridSums)
-    # sig2hat.jk = do.call(rbind, sig2hat.jk)
-    muhat.jk = do.call(rbind, muhat.jk)
+  sig2hat.jk = lapply((1:n)[delta == 1], jackknifeVariance,
+                      kernMatrix = kernMatrix, n = n, m = m,
+                      delta = delta, y = y)
 
-    # muhat.jk = ((n^(4 / 5)) * (matrix(1, nrow = n, ncol = 1) %*% muhat.fullData) -
-    #   ((n - 1)^(4 / 5)) * muhat.jk) / (n^(4/5) - (n - 1)^(4/5))
+  sig2hat.jk = do.call(rbind, sig2hat.jk)
 
-    # bias2 = (muhat.fullData - colMeans(muhat.jk))^2
-    # s2 = colSums((muhat.jk - (matrix(1, nrow = n, ncol = 1) %*%
-    #                             colMeans(muhat.jk)))^2) / (n * (n - 1))
-    bias2 = (preds[i] - colMeans(muhat.jk))^2
-    s2 = colSums((muhat.jk - preds[i])^2) / (n * (n - 1))
-    mse = bias2 + s2
+  bias2 = (sig2hat.fullData - colMeans(sig2hat.jk))^2
+  s2 = colSums((sig2hat.jk - matrix(colMeans(sig2hat.jk),
+                                    nrow = nrow(sig2hat.jk), ncol = m,
+                                    byrow = TRUE))^2) / (n * (n - 1))
+  mse = bias2 + s2
 
-    return(bwGrid[which.min(mse)])
-
-    # bias2 = ((colMeans(sig2hat.jk) - sig2hat.fullData) * (nrow(kernGrid) - 1))^2
-    # var = colSums((sig2hat.jk - matrix(1, nrow = nrow(kernGrid), ncol = 1) %*%
-    #                  sig2hat.fullData)^2) * (nrow(kernGrid) - 1)
-
-
-
-    # rnorm(1, preds[delta == 0][i], sqrt(sig2hat.fullData))
-  }
-
-
-
-
-  # nf.div = floor(nrow(weightGrid) / nfolds)
-  # nf.rem = nrow(weightGrid) %% nfolds
-  # if(nf.rem != 0){
-  #   CVindex = sample(c(rep(1:nfolds, times = nf.div), 1:(nf.rem))
-  # }
-  # else{
-  #   CVindex = sample(c(rep(1:nfolds, times = nf.div)))
-  # }
-
-  # pihat.cv = vector
-  # lapply(1:nfolds, function(i, CVindex, kernGrid){
-
-  # })
-
-
-  # else if(imputation == "semiparametric"){
-  #   pihat = sum(kernVals * delta) / sum(kernVals)
-  #   muhat = sum(weights * delta * y / pihat)
-  #   sig2hat = sum(weights * delta * y^2 / pihat) - muhat^2
-  #   rnorm(1, muhat, sqrt(sig2hat))
-  # }
-  # else if(imputation == "nonparametric"){
-  #   sample(y[delta == 1], size = 1, prob = weights[delta == 1] /
-  #            sum(weights[delta == 1]))
-  # }
-#
-#   for(bw in bwGrid){
-#     imputeFullData = local_imputation(i, preds, y = y, delta, bw = bw, lambda = NULL,
-#                                       imputation = c("semiparametric", "nonparametric"),
-#                                       kernel = c("gaussian", "uniform", "triangular"),
-#                                       weights = c("nadaraya-watson"))
-#   }
+  return(bwGrid[which.min(mse)])
 }

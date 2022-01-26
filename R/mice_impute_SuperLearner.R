@@ -22,10 +22,6 @@
 #' @param bw NULL or numeric value for bandwidth of kernel function (as standard deviations of the kernel).
 #' @param bw.update jefeaerg
 #' @param lambda NULL or numeric value for bandwidth for kernel (as half-width of the kernel).
-#' @param imputation One of "semiparametric" or "nonparametric". Determines
-#' distribution from which imputed values are drawn. See
-#' mice.impute.SuperLearner() documentation for more details.
-#' @param weights One of "nadaraya-watson", ...
 #' @param ... Further arguments passed to \code{SuperLearner} or \code{h2o}.
 #' @return Vector with imputed data, same type as y, and of length sum(wy)
 #'
@@ -43,9 +39,7 @@
 #'   imp.SL <- mice::mice(dat, m = 5, method = "SuperLearner",
 #'                          print = TRUE, SL.library = SL.lib,
 #'                          kernel = "gaussian",
-#'                          bw = c(0.1, 0.2, 0.25, 0.3, 0.5, 1, 2.5, 5, 10, 20),
-#'                          imputation = "semiparametricSL",
-#'                          weights = "nadaraya-watson")
+#'                          bw = c(0.1, 0.2, 0.25, 0.3, 0.5, 1, 2.5, 5, 10, 20))
 #'
 #' @export
 #' @import SuperLearner
@@ -58,11 +52,7 @@ mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
                                     bw = c(0.1, 0.2, 0.25, 0.3, 0.5, 1, 2.5,
                                            5, 10, 20),
                                     bw.update = TRUE,
-                                    lambda = NULL,
-                                    imputation = c("semiparametricSL",
-                                                   "semiparametric",
-                                                   "nonparametric"),
-                                    weights = "nadaraya-watson", ...){
+                                    lambda = NULL, ...){
   if(!requireNamespace("SuperLearner")){
     stop(simpleError('SuperLearner is not installed.'))
   }
@@ -76,13 +66,12 @@ mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
   }
 
   if(length(unique(y)) == 2){
-    imps = binary.SuperLearner(y, x, wy, SL.library, ...)
+    imps = binarySuperLearner(y, x, wy, SL.library, ...)
   }
   else if(class(y) == "numeric"){
-    imps = continuous.SuperLearner(y, x, wy, SL.library, kernel = kernel,
+    imps = continuousSuperLearner(y, x, wy, SL.library, kernel = kernel,
                                    bw = bw, bw.update = bw.update,
-                                   lambda = lambda, imputation = imputation,
-                                   weights = weights, ...)
+                                   lambda = lambda, ...)
   }
   else{
     stop(simpleError("Invalid data type for Super Learner Imputation.
