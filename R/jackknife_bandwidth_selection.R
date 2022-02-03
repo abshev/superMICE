@@ -1,29 +1,29 @@
 #' Jackknife method for selection bandwidth
 #'
-#' @param bwGrid blah
-#' @param i blah
-#' @param preds blah
-#' @param y blah
-#' @param delta blah
-#' @param lambda blah
-#' @param kernel blah
+#' @param i integer referring to the index of the missing value to be imputed.
+#' @param bwGrid numeric vector of candidate bandwidth values
+#' @param preds numeric vector of predicted values for missing observations
+#' @param y numeric vector of length \code{n} of observed and imputed values.
+#' @param delta Binary vector of length \code{length(y)} indicating missingness.
+#' \code{1} where \code{y} is observed and \code{0} where \code{y} is missing.
+#' @param kernel one of \code{gaussian}, \code{uniform}, or \code{triangular}.
+#' Specifies the kernel to be used in estimating the distribution around a missing value.
 #' @return bandwidth
 
-jackknifeBandwidthSelection = function(i, bwGrid, preds, y, delta,
-                                         lambda = NULL, kernel){
+jackknifeBandwidthSelection = function(i, bwGrid, preds, y, delta, kernel){
   if(kernel == "gaussian"){
     kernGrid = lapply(bwGrid, gaussianKernel, x = preds,
-                        xcenter = preds[i], lambda = lambda)
+                        xcenter = preds[i], lambda = NULL)
   }
 
   if(kernel == "uniform"){
     kernGrid = lapply(bwGrid, uniformKernel, x = preds,
-                        xcenter = preds[i], lambda = lambda)
+                        xcenter = preds[i], lambda = NULL)
   }
 
   if(kernel == "triangular"){
     kernGrid = lapply(bwGrid, triangularKernel, x = preds,
-                        xcenter = preds[i], lambda = lambda)
+                        xcenter = preds[i], lambda = NULL)
   }
   kernMatrix = do.call(cbind, kernGrid)
   n = nrow(kernMatrix)
@@ -40,8 +40,7 @@ jackknifeBandwidthSelection = function(i, bwGrid, preds, y, delta,
   sig2hat.fullData = mu2hat.fullData - muhat.fullData^2
 
   sig2hat.jk = lapply((1:n)[delta == 1], jackknifeVariance,
-                      kernMatrix = kernMatrix, n = n, m = m,
-                      delta = delta, y = y)
+                      kernMatrix = kernMatrix, delta = delta, y = y)
 
   sig2hat.jk = do.call(rbind, sig2hat.jk)
 

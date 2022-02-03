@@ -2,7 +2,8 @@
 #'
 #' @param y Vector of observed values of the variable to be imputed.
 #' @param x Numeric matrix of variables to be used as predictors in SuperLearner methods with rows corresponding to values in Y.
-#' @param wy blah
+#' @param wy Logical vector of length \code{length(y)}. A \code{TRUE} value indicates
+#' locations in \code{y} for which imputations are created.
 #' @param SL.library Either a character vector of prediction algorithms or a list containing character vectors. A list of functions included in the SuperLearner package can be found with SuperLearner::listWrappers().
 #' @param ... Further arguments passed to SuperLearner.
 #' @return Binary Vector of randomly drawn imputed values.
@@ -27,10 +28,7 @@ binarySuperLearner = function(y, x, wy, SL.library, ...){
   }
   args$type = NULL
   sl <- do.call(SuperLearner, args[names(args) != "parallel"])
-  # if(method.weights){
-  #   .GlobalEnv$superMICE.weights <- c(.GlobalEnv$superMICE.weights,
-  #                                     list(sl$coef))
-  # }
+
   phat <- predict.SuperLearner(object = sl, newdata = newdata,
                                X = X, Y = Y, TRUE)$pred
   binaryImputations = stats::rbinom(length(phat[wy]), 1, phat[wy])

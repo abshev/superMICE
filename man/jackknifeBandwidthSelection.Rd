@@ -4,22 +4,22 @@
 \alias{jackknifeBandwidthSelection}
 \title{Jackknife method for selection bandwidth}
 \usage{
-jackknifeBandwidthSelection(i, bwGrid, preds, y, delta, lambda = NULL, kernel)
+jackknifeBandwidthSelection(i, bwGrid, preds, y, delta, kernel)
 }
 \arguments{
-\item{i}{blah}
+\item{i}{integer referring to the index of the missing value to be imputed.}
 
-\item{bwGrid}{blah}
+\item{bwGrid}{numeric vector of candidate bandwidth values}
 
-\item{preds}{blah}
+\item{preds}{numeric vector of predicted values for missing observations}
 
-\item{y}{blah}
+\item{y}{numeric vector of length \code{n} of observed and imputed values.}
 
-\item{delta}{blah}
+\item{delta}{Binary vector of length \code{length(y)} indicating missingness.
+\code{1} where \code{y} is observed and \code{0} where \code{y} is missing.}
 
-\item{lambda}{blah}
-
-\item{kernel}{blah}
+\item{kernel}{one of \code{gaussian}, \code{uniform}, or \code{triangular}.
+Specifies the kernel to be used in estimating the distribution around a missing value.}
 }
 \value{
 bandwidth

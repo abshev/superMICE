@@ -4,23 +4,22 @@
 \alias{jackknifeVariance}
 \title{Computes jackknife variance}
 \usage{
-jackknifeVariance(j, kernMatrix, n, m, delta, y)
+jackknifeVariance(j, kernMatrix, delta, y)
 }
 \arguments{
-\item{j}{blah}
+\item{j}{integer index for deleted observation in the jackknife procedure.}
 
-\item{kernMatrix}{blah}
+\item{kernMatrix}{\code{(n-1)} by \code{m} matrix of kernel values centered at missing
+observation \code{j} where \code{n} is the total number of observations and \code{m} is the
+number of candidate bandwidths.}
 
-\item{n}{blah}
+\item{delta}{Binary vector of length \code{n} indicating missingness.
+\code{1} where \code{y} is observed and \code{0} where \code{y} is missing.}
 
-\item{m}{blah}
-
-\item{delta}{blah}
-
-\item{y}{blah}
+\item{y}{numeric vector of length \code{n} of observed values and imputed values.}
 }
 \value{
-variance
+returns a single numeric value for the estimate of the jackknife variance.
 }
 \description{
 Computes jackknife variance

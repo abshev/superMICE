@@ -2,46 +2,38 @@
 % Please edit documentation in R/continuous_SuperLearner_regression.R
 \name{continuousSuperLearner}
 \alias{continuousSuperLearner}
-\title{Function to generate imputations using regression and SuperLearner for data with a continuous outcome}
+\title{Function to generate imputations using SuperLearner for data with a continuous outcome}
 \usage{
-continuousSuperLearner(
-  y,
-  x,
-  wy,
-  SL.library,
-  kernel,
-  bw,
-  bw.update,
-  lambda,
-  ...
-)
+continuousSuperLearner(y, x, wy, SL.library, kernel, bw, bw.update, ...)
 }
 \arguments{
-\item{y}{Vector of observed values of the variable to be imputed.}
+\item{y}{Vector of observed and missing/imputed values of the variable to be imputed.}
 
-\item{x}{Numeric matrix of variables to be used as predictors in H2O methods
-with rows corresponding to observed values of the variable to be imputed.}
+\item{x}{Numeric matrix of variables to be used as predictors in SuperLearner models
+with rows corresponding to observed values of the variable to be imputed and
+columns corresponding to individual predictor variables.}
 
-\item{wy}{Logical vector of length length(y). A TRUE value indicates
-locations in y for which imputations are created.}
+\item{wy}{Logical vector. A TRUE value indicates locations in \code{y} that are
+missing or imputed.}
 
 \item{SL.library}{Either a character vector of prediction algorithms or a
 list containing character vectors. A list of functions included in the
-SuperLearner package can be found with SuperLearner::listWrappers().}
+SuperLearner package can be found with \code{SuperLearner::listWrappers()}.}
 
-\item{kernel}{One of "gaussian",...  Kernel function used to compute weights.}
+\item{kernel}{one of \code{gaussian}, \code{uniform}, or \code{triangular}.
+Specifies the kernel to be used in estimating the distribution around a missing value.}
 
-\item{bw}{NULL or numeric value for bandwidth of kernel function (as standard deviations of the kernel).}
+\item{bw}{\code{NULL} or numeric value for bandwidth of kernel function (as standard deviations of the kernel).}
 
-\item{bw.update}{eriogjaoier}
+\item{bw.update}{logical indicating whether bandwidths should be computed
+every iteration or only on the first iteration.  Default is \code{TRUE},
+but \code{FALSE} may speed up the run time at the cost of accuracy.}
 
-\item{lambda}{NULL or numeric value for bandwidth for kernel (as half-width of the kernel).}
-
-\item{...}{further arguments passed to SuperLearner.}
+\item{...}{further arguments passed to \code{SuperLearner()}.}
 }
 \value{
-Numeric vector of randomly drawn imputed values.
+numeric vector of randomly drawn imputed values.
 }
 \description{
-Function to generate imputations using regression and SuperLearner for data with a continuous outcome
+Function to generate imputations using SuperLearner for data with a continuous outcome
 }

@@ -10,27 +10,26 @@ localImputation(
   y,
   delta,
   bw = NULL,
-  lambda = NULL,
   kernel = c("gaussian", "uniform", "triangular")
 )
 }
 \arguments{
-\item{i}{Integer referring to the index of the missing value to be imputed.}
+\item{i}{integer referring to the index of the missing value to be imputed.}
 
-\item{preds}{Numeric vector of predictions of missing values from SuperLearner or H2O.}
+\item{preds}{numeric vector of predictions of missing values from SuperLearner.}
 
-\item{y}{Numeric vector for variable to be imputed.}
+\item{y}{numeric vector for variable to be imputed.}
 
-\item{delta}{Binary vector of length length(y) with 1 where y is observed and 0 where y is missing.}
+\item{delta}{binary vector of length \code{length(y)} indicating missingness.
+\code{1} where \code{y} is observed and \code{0} where \code{y} is missing.}
 
-\item{bw}{NULL or numeric value for bandwidth of kernel function (as standard deviations of the kernel).}
+\item{bw}{\code{NULL} or numeric value for bandwidth of kernel function (as standard deviations of the kernel).}
 
-\item{lambda}{NULL or numeric value for bandwidth for kernel (as half-width of the kernel).}
-
-\item{kernel}{Kernel function used to compute weights.}
+\item{kernel}{one of \code{gaussian}, \code{uniform}, or \code{triangular}.
+Specifies the kernel to be used in estimating the distribution around a missing value.}
 }
 \value{
-Numeric vector of randomly drawn imputed values.
+numeric vector of randomly drawn imputed values.
 }
 \description{
 Function to generate imputations using non-parametric and semi-parametric local imputation methods.

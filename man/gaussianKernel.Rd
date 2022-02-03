@@ -7,16 +7,16 @@
 gaussianKernel(x, xcenter, bw = 1, lambda = NULL)
 }
 \arguments{
-\item{x}{blah}
+\item{x}{numeric vector of values to weight.}
 
-\item{xcenter}{blah}
+\item{xcenter}{numeric value to center the kernel.}
 
-\item{bw}{blah}
+\item{bw}{bandwidth of the kernel.}
 
-\item{lambda}{blah}
+\item{lambda}{kernel radius, function of \code{bw}.}
 }
 \value{
-nothing
+kernel values for \code{x} centered at \code{xcenter}.
 }
 \description{
 Kernel functions used for local imputation

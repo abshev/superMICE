@@ -1,7 +1,7 @@
 Package: superMICE
 Type: Package
 Title: SuperLearner Method for MICE
-Version: 0.6.0
+Version: 0.6.1
 Author: Aaron B. Shev
 Maintainer: Aaron B. Shev <abshev@ucdavis.edu>
 Description: This humble package adds a Super Learner ensemble model method using 
@@ -11,9 +11,31 @@ Imports:
     mice,
     SuperLearner
 Suggests:
-    randomForest,
-    glmnet
+    arm, 
+    bartMachine, 
+    biglasso, 
+    class, 
+    e1071, 
+    earth, 
+    extraTrees, 
+    gbm, 
+    glmnet, 
+    ipred, 
+    KernelKnn, 
+    kernlab, 
+    LogicReg, 
+    MASS,  
+    nnet, 
+    party, 
+    polspline,
+    randomForest, 
+    ranger,
+    rpart,
+    speedglm, 
+    spls, 
+    xgboost
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2

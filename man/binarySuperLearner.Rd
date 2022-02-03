@@ -11,7 +11,8 @@ binarySuperLearner(y, x, wy, SL.library, ...)
 
 \item{x}{Numeric matrix of variables to be used as predictors in SuperLearner methods with rows corresponding to values in Y.}
 
-\item{wy}{blah}
+\item{wy}{Logical vector of length \code{length(y)}. A \code{TRUE} value indicates
+locations in \code{y} for which imputations are created.}
 
 \item{SL.library}{Either a character vector of prediction algorithms or a list containing character vectors. A list of functions included in the SuperLearner package can be found with SuperLearner::listWrappers().}
 

@@ -1,14 +1,17 @@
 #' Computes jackknife variance
 #'
-#' @param j blah
-#' @param kernMatrix blah
-#' @param n blah
-#' @param m blah
-#' @param delta blah
-#' @param y blah
-#' @return variance
+#' @param j integer index for deleted observation in the jackknife procedure.
+#' @param kernMatrix \code{(n-1)} by \code{m} matrix of kernel values centered at missing
+#' observation \code{j} where \code{n} is the total number of observations and \code{m} is the
+#' number of candidate bandwidths.
+#' @param delta Binary vector of length \code{n} indicating missingness.
+#' \code{1} where \code{y} is observed and \code{0} where \code{y} is missing.
+#' @param y numeric vector of length \code{n} of observed values and imputed values.
+#' @return returns a single numeric value for the estimate of the jackknife variance.
 
-jackknifeVariance = function(j, kernMatrix, n, m, delta, y){
+jackknifeVariance = function(j, kernMatrix, delta, y){
+  n = nrow(kernMatrix)
+  m = ncol(kernMatrix)
   newKernMatrix = kernMatrix[-j,]
   newDelta = delta[-j]
   newy = y[-j]

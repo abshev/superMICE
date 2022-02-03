@@ -1,10 +1,10 @@
 #' Kernel functions used for local imputation
 #'
-#' @param x blah
-#' @param xcenter blah
-#' @param bw blah
-#' @param lambda blah
-#' @return nothing
+#' @param x numeric vector of values to weight.
+#' @param xcenter numeric value to center the kernel.
+#' @param bw bandwidth of the kernel.
+#' @param lambda kernel radius, function of \code{bw}.
+#' @return kernel values for \code{x} centered at \code{xcenter}.
 #'
 #' @importFrom stats dnorm
 

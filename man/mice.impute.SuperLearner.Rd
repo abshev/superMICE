@@ -13,49 +13,76 @@ mice.impute.SuperLearner(
   kernel = c("gaussian", "uniform", "triangular"),
   bw = c(0.1, 0.2, 0.25, 0.3, 0.5, 1, 2.5, 5, 10, 20),
   bw.update = TRUE,
-  lambda = NULL,
   ...
 )
 }
 \arguments{
 \item{y}{Vector to be imputed}
 
-\item{ry}{Logical vector of length length(y) indicating the the subset y[ry]
-of elements in y to which the imputation model is fitted. The ry generally
-distinguishes the observed (TRUE) and missing values (FALSE) in y.}
+\item{ry}{Logical vector of length \code{length(y)} indicating the the subset
+\code{y[ry]} of elements in y to which the imputation model is fitted.
+The \code{ry} generally distinguishes the observed (\code{TRUE}) and missing
+values (\code{FALSE}) in \code{y}.}
 
-\item{x}{Numeric design matrix with length(y) rows with predictors for y.
-Matrix x may have no missing values.}
+\item{x}{Numeric design matrix with \code{length(y)} rows with predictors
+for \code{y}.
+Matrix \code{x} may have no missing values.}
 
-\item{wy}{Logical vector of length length(y). A TRUE value indicates
-locations in y for which imputations are created.}
+\item{wy}{Logical vector of length \code{length(y)}. A \code{TRUE} value indicates
+locations in \code{y} for which imputations are created.}
 
 \item{SL.library}{For SuperLearner: Either a character vector of prediction
 algorithms or list containing character vectors as specified by the
-SuperLearner package.  For h2o, a named list of character vectors specifying
-prediction algorithms and arguments to be passed to h2o.  See details below
-for examples on the structure.}
+SuperLearner package.  See details below.}
 
 \item{kernel}{One of "gaussian", "uniform", "triangular".  Kernel function
 used to compute weights.}
 
 \item{bw}{NULL or numeric value for bandwidth of kernel function (as standard deviations of the kernel).}
 
-\item{bw.update}{jefeaerg}
+\item{bw.update}{logical indicating whether bandwidths should be computed
+every iteration or only on the first iteration.  Default is \code{TRUE},
+but \code{FALSE} may speed up the run time at the cost of accuracy.}
 
-\item{lambda}{NULL or numeric value for bandwidth for kernel (as half-width of the kernel).}
-
-\item{...}{Further arguments passed to \code{SuperLearner} or \code{h2o}.}
+\item{...}{Further arguments passed to \code{SuperLearner}.}
 }
 \value{
-Vector with imputed data, same type as y, and of length sum(wy)
+Vector with imputed data, same type as \code{y}, and of length \code{sum(wy)}
 }
 \description{
 Method for the \code{mice} package that uses SuperLearner as the predctive
-algorithm.  This is done through a backend powered by either the
-\code{SuperLearner} package or H2O.
+algorithm.  Model fitting is done using the \code{SuperLearner} package.
+}
+\details{
+SuperMICE is a method for use with the \link[mice:mice]{mice()} function that
+implements the ensemble predictive model, SuperLearner (van der Laan, 2011),
+into the mice (van Buuren, 2011) multiple imputation procedure. An estimate
+for missing values are obtained by fitting  a selection of different
+predictive models on complete cases and determining an optimal weighted average
+of candidate models to predict the missing cases. SuperMICE uses the implementation
+of SuperLearner found in the \link{SuperLearner} package.
+The models to be used with \code{\link[SuperLearner:SuperLearner]{SuperLearner()}} are supplied by the user as a
+character vector. For a full list of available methods see
+\code{\link[SuperLearner:listWrappers]{listWrappers()}}.
+
+By design, the SuperLearner method only provides a point estimate for predictive purposes.
+To generate an appropriate neighborhood around the SuperLearner estimate to draw
+from we use a kernel based estimate of local variance around each missing value.
+The kernel can be set by the user with the \code{kerel} argument as either
+a gaussian kernel, unfiform kernel, or triangular kernel.  The user must also
+supply a list of candidate bandwidths in the \code{bw} argument as a numeric
+vector.  For more information on the variance and bandwidth selection
+see Laqueur, et. al (2021). In every iteration the mice procedure, the optimal
+bandwidth is reselected. This may be changed to select the bandwidth only
+on the first iteration to speed up the total run time of the imputation by
+changing \code{bw.update} to \code{FALSE}; however this may bias your results.
+Note that this only applies to continuous response variables.  In the binary
+case the variance is a function of the SuperLearner estimate.
 }
 \examples{
+  library(mice)
+  library(superMICE)
+
   n <- 100
   pmissing <- 0.10
   x1 = runif(n, min = -3, max = 3)
@@ -66,9 +93,25 @@ algorithm.  This is done through a backend powered by either the
   x2 <- ifelse(runif(x2) < (f(x1) * 2 * pmissing), NA, x2)
   dat <- data.frame(y, x1, x2)
   SL.lib <- c("SL.glm", "SL.glm.interaction", "SL.glmnet", "SL.loess")
-  imp.SL <- mice::mice(dat, m = 5, method = "SuperLearner",
+  imp.SL <- mice(dat, m = 5, method = "SuperLearner",
                          print = TRUE, SL.library = SL.lib,
                          kernel = "gaussian",
                          bw = c(0.1, 0.2, 0.25, 0.3, 0.5, 1, 2.5, 5, 10, 20))
 
+}
+\references{
+Laqueur, H. S., Shev, A. B., Kagawa, R. M. C. (2021). SuperMICE: An Ensemble
+Machine Learning Approach to Multiple Imputation by Chained Equations.
+American Journal of Epidemiology, kwab271,
+doi: \href{https://doi.org/10.1093/aje/kwab271}{10.1093/aje/kwab271}.
+
+Van Buuren, S., Groothuis-Oudshoorn, K. (2011). \code{mice}: Multivariate
+Imputation by Chained Equations in \code{R}. Journal of Statistical Software,
+\strong{45}(3), 1-67. doi: \href{https://doi.org/10.18637/jss.v045.i03}{10.18637/jss.v045.i03}.
+
+van der Laan, M. J., Polley, E. C. and Hubbard, A. E. (2008) Super Learner,
+Statistical Applications of Genetics and Molecular Biology, 6, article 25.
+}
+\seealso{
+\code{\link[mice:mice]{mice()}}, \code{\link[SuperLearner:SuperLearner]{SuperLearner()}}
 }

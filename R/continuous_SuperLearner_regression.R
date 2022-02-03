@@ -1,25 +1,27 @@
-#' Function to generate imputations using regression and SuperLearner for data with a continuous outcome
+#' Function to generate imputations using SuperLearner for data with a continuous outcome
 #'
-#' @param y Vector of observed values of the variable to be imputed.
-#' @param x Numeric matrix of variables to be used as predictors in H2O methods
-#' with rows corresponding to observed values of the variable to be imputed.
-#' @param wy Logical vector of length length(y). A TRUE value indicates
-#' locations in y for which imputations are created.
+#' @param y Vector of observed and missing/imputed values of the variable to be imputed.
+#' @param x Numeric matrix of variables to be used as predictors in SuperLearner models
+#' with rows corresponding to observed values of the variable to be imputed and
+#' columns corresponding to individual predictor variables.
+#' @param wy Logical vector. A TRUE value indicates locations in \code{y} that are
+#' missing or imputed.
 #' @param SL.library Either a character vector of prediction algorithms or a
 #' list containing character vectors. A list of functions included in the
-#' SuperLearner package can be found with SuperLearner::listWrappers().
-#' @param bw NULL or numeric value for bandwidth of kernel function (as standard deviations of the kernel).
-#' @param bw.update eriogjaoier
-#' @param lambda NULL or numeric value for bandwidth for kernel (as half-width of the kernel).
-#' @param kernel One of "gaussian",...  Kernel function used to compute weights.
-#' @param ... further arguments passed to SuperLearner.
-#' @return Numeric vector of randomly drawn imputed values.
+#' SuperLearner package can be found with \code{SuperLearner::listWrappers()}.
+#' @param bw \code{NULL} or numeric value for bandwidth of kernel function (as standard deviations of the kernel).
+#' @param bw.update logical indicating whether bandwidths should be computed
+#' every iteration or only on the first iteration.  Default is \code{TRUE},
+#' but \code{FALSE} may speed up the run time at the cost of accuracy.
+#' @param kernel one of \code{gaussian}, \code{uniform}, or \code{triangular}.
+#' Specifies the kernel to be used in estimating the distribution around a missing value.
+#' @param ... further arguments passed to \code{SuperLearner()}.
+#' @return numeric vector of randomly drawn imputed values.
 #'
 
 
-#Continuous SuperLearner Regression
-continuousSuperLearner <- function(y, x, wy, SL.library, kernel, bw, bw.update,
-                                    lambda, ...){
+#Continuous SuperLearner
+continuousSuperLearner <- function(y, x, wy, SL.library, kernel, bw, bw.update, ...){
   newdata <- data.frame(x)
   names(newdata) <- sapply(1:ncol(newdata), function(n){paste0("x", n)})
 
@@ -48,7 +50,6 @@ continuousSuperLearner <- function(y, x, wy, SL.library, kernel, bw, bw.update,
                      preds = sl.preds,
                      y = y,
                      delta = as.numeric(!wy),
-                     lambda = lambda,
                      kernel = kernel)
         bw <- as.list(bw)
     }
@@ -61,7 +62,6 @@ continuousSuperLearner <- function(y, x, wy, SL.library, kernel, bw, bw.update,
                  preds = sl.preds,
                  y = y,
                  delta = as.numeric(!wy),
-                 lambda = lambda,
                  kernel = kernel)
     bw <- as.list(bw)
   }
@@ -69,6 +69,5 @@ continuousSuperLearner <- function(y, x, wy, SL.library, kernel, bw, bw.update,
 
   sapply(1:sum(wy), localImputation, preds = sl.preds, y = y,
          delta = as.numeric(!wy),
-         bw = bw, lambda = lambda,
-         kernel = kernel)
+         bw = bw, kernel = kernel)
 }
