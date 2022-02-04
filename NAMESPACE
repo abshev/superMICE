@@ -2,7 +2,7 @@
 
 export(mice.impute.SuperLearner)
 import(SuperLearner)
+import(mice)
 importFrom(stats,binomial)
 importFrom(stats,dnorm)
-importFrom(stats,gaussian)
 importFrom(stats,rnorm)

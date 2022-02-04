@@ -25,10 +25,18 @@
 #' @param ... Further arguments passed to \code{SuperLearner}.
 #' @return Vector with imputed data, same type as \code{y}, and of length \code{sum(wy)}
 #'
-#' @details SuperMICE is a method for use with the [mice()][mice::mice()] function that
+#' @details `mice.impute.SuperLearner()` is a method for use with the [mice()][mice::mice()] function that
 #' implements the ensemble predictive model, SuperLearner (van der Laan, 2011),
-#' into the mice (van Buuren, 2011) multiple imputation procedure. An estimate
-#' for missing values are obtained by fitting  a selection of different
+#' into the mice (van Buuren, 2011) multiple imputation procedure. This function
+#' is never called directly, instead a user that wishes to use SuperLearner
+#' in MICE simply needs to set the argument `method = "SuperLearner"` in the
+#' call to [`mice()`][mice::mice()]. Arguments for the [`SuperLearner()`][SuperLearner::SuperLearner()]
+#' function are passed from mice as extra arguments in the [`mice()`][mice::mice()] call.
+#'
+#' All MICE methods randomly generate imputed values for a number of data sets.
+#' The approach of SuperMICE is to estimate parameters for a normal distribution
+#' centered at the point estimate for an imputed value predicted by a SuperLearner model.
+#' The point estimates are obtained by fitting a selection of different
 #' predictive models on complete cases and determining an optimal weighted average
 #' of candidate models to predict the missing cases. SuperMICE uses the implementation
 #' of SuperLearner found in the [SuperLearner] package.
@@ -36,11 +44,11 @@
 #' character vector. For a full list of available methods see
 #' [`listWrappers()`][SuperLearner::listWrappers()].
 #'
-#' By design, the SuperLearner method only provides a point estimate for predictive purposes.
-#' To generate an appropriate neighborhood around the SuperLearner estimate to draw
-#' from we use a kernel based estimate of local variance around each missing value.
-#' The kernel can be set by the user with the \code{kerel} argument as either
-#' a gaussian kernel, unfiform kernel, or triangular kernel.  The user must also
+#' SuperLearner models do not produce standard errors for estimates, so instead
+#' we use a kernel based estimate of local variance around each point estimate
+#' as the variance parameter in the normal distribution used to randomly sample values.
+#' The kernel can be set by the user with the \code{kernel} argument as either
+#' a gaussian kernel, uniform kernel, or triangular kernel. The user must also
 #' supply a list of candidate bandwidths in the \code{bw} argument as a numeric
 #' vector.  For more information on the variance and bandwidth selection
 #' see Laqueur, et. al (2021). In every iteration the mice procedure, the optimal
@@ -67,28 +75,33 @@
 #' @seealso [`mice()`][mice::mice()], [`SuperLearner()`][SuperLearner::SuperLearner()]
 #'
 #' @examples
-#'   library(mice)
-#'   library(superMICE)
 #'
+#'   #Estimating regression coefficients with missing data on a
+#'   #  continuous variable.
+#'
+#'   #Randomly generated data with missingness in x2. The probability of x2
+#'   #  being missing increases with with value of x1.
 #'   n <- 100
 #'   pmissing <- 0.10
-#'   x1 = runif(n, min = -3, max = 3)
-#'   x2 = x1^2 + rnorm(n, mean = 0, sd = 1)
+#'   x1 <- runif(n, min = -3, max = 3)
+#'   x2 <- x1^2 + rnorm(n, mean = 0, sd = 1)
 #'   error <- rnorm(n, mean = 0, sd = 1)
 #'   y <- x1 + x2 + error
 #'   f <- ecdf(x1)
 #'   x2 <- ifelse(runif(x2) < (f(x1) * 2 * pmissing), NA, x2)
 #'   dat <- data.frame(y, x1, x2)
-#'   SL.lib <- c("SL.glm", "SL.glm.interaction", "SL.glmnet", "SL.loess")
-#'   imp.SL <- mice(dat, m = 5, method = "SuperLearner",
+#'   SL.lib <- c("SL.glm", "SL.glmnet", "SL.loess")
+#'   imp.SL <- mice::mice(dat, m = 5, method = "SuperLearner",
 #'                          print = TRUE, SL.library = SL.lib,
 #'                          kernel = "gaussian",
 #'                          bw = c(0.1, 0.2, 0.25, 0.3, 0.5, 1, 2.5, 5, 10, 20))
+#'   fit.SL = with(imp.SL, exp = lm(y ~ x1 + x2))
+#'   summary(mice::pool(fit.SL))
+#'
+#' @import SuperLearner
+#' @import mice
 #'
 #' @export
-#' @import SuperLearner
-#' @importFrom stats gaussian
-#' @importFrom stats binomial
 
 mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
                                     kernel = c("gaussian", "uniform",
