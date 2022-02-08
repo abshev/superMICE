@@ -63,11 +63,11 @@
 #' Laqueur, H. S., Shev, A. B., Kagawa, R. M. C. (2021). SuperMICE: An Ensemble
 #' Machine Learning Approach to Multiple Imputation by Chained Equations.
 #' American Journal of Epidemiology, kwab271,
-#' doi: [10.1093/aje/kwab271](https://doi.org/10.1093/aje/kwab271).
+#'  \doi{10.1093/aje/kwab271}.
 #'
 #' Van Buuren, S., Groothuis-Oudshoorn, K. (2011). \code{mice}: Multivariate
 #' Imputation by Chained Equations in \code{R}. Journal of Statistical Software,
-#' **45**(3), 1-67. doi: [10.18637/jss.v045.i03](https://doi.org/10.18637/jss.v045.i03).
+#' **45**(3), 1-67. \doi{10.18637/jss.v045.i03}.
 #'
 #' van der Laan, M. J., Polley, E. C. and Hubbard, A. E. (2008) Super Learner,
 #' Statistical Applications of Genetics and Molecular Biology, 6, article 25.

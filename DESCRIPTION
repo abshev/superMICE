@@ -4,8 +4,8 @@ Title: SuperLearner Method for MICE
 Version: 1.0.0
 Author: Aaron B. Shev
 Maintainer: Aaron B. Shev <abshev@ucdavis.edu>
-Description: This humble package adds a Super Learner ensemble model method using 
-    the SuperLearner package to the mice package for multiple imputation.
+Description: This humble package adds a Super Learner ensemble model method (using the SuperLearner package)  
+    to the mice package.
 Imports:
     stats,
     mice,
@@ -13,7 +13,6 @@ Imports:
 Suggests:
     arm, 
     bartMachine, 
-    biglasso, 
     class, 
     e1071, 
     earth, 
