@@ -76,12 +76,11 @@
 #'
 #' @examples
 #'
-#'   #Estimating regression coefficients with missing data on a
-#'   #  continuous variable.
+#'   #Multiple imputation with missingness on a continuous variable.
 #'
 #'   #Randomly generated data with missingness in x2. The probability of x2
 #'   #  being missing increases with with value of x1.
-#'   n <- 100
+#'   n <- 20
 #'   pmissing <- 0.10
 #'   x1 <- runif(n, min = -3, max = 3)
 #'   x2 <- x1^2 + rnorm(n, mean = 0, sd = 1)
@@ -90,13 +89,23 @@
 #'   f <- ecdf(x1)
 #'   x2 <- ifelse(runif(x2) < (f(x1) * 2 * pmissing), NA, x2)
 #'   dat <- data.frame(y, x1, x2)
-#'   SL.lib <- c("SL.glm", "SL.glmnet", "SL.loess")
-#'   imp.SL <- mice::mice(dat, m = 5, method = "SuperLearner",
-#'                          print = TRUE, SL.library = SL.lib,
-#'                          kernel = "gaussian",
-#'                          bw = c(0.1, 0.2, 0.25, 0.3, 0.5, 1, 2.5, 5, 10, 20))
-#'   fit.SL = with(imp.SL, exp = lm(y ~ x1 + x2))
-#'   summary(mice::pool(fit.SL))
+#'
+#'   #Create vector of SuperLearner method names
+#'   #  Note: see SuperLearner::listWrappers() for a full list of methods
+#'   #    available.
+#'   SL.lib <- c("SL.mean", "SL.glm")
+#'
+#'   #Run mice().
+#'   #  Note 1: m >= 30 and maxit >= 10 are recommended outside of this
+#'   #    toy example
+#'   #  Note 2: a denser bandwidth grid is recommended, see default for bw
+#'   #    argument for example.
+#'   imp.SL <- mice::mice(dat, m = 2, maxit = 2,
+#'                        method = "SuperLearner",
+#'                        print = TRUE, SL.library = SL.lib,
+#'                        kernel = "gaussian",
+#'                        bw = c(0.25, 1, 5))
+#'
 #'
 #' @import SuperLearner
 #' @import mice

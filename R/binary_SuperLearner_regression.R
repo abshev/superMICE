@@ -17,11 +17,36 @@ binarySuperLearner = function(y, x, wy, SL.library, ...){
   newdata <- data.frame(x)
   names(newdata) <- sapply(1:ncol(newdata), function(n){paste0("x", n)})
 
+  if(any(!(unique(y) %in% c(0,1)))){
+    if(is.character(y)){
+      yTemp <- as.factor(y)
+      yValues <- levels(yTemp)
+      yTemp <- as.numeric(yTemp) - 1
+    }
+    else if(is.numeric(y)){
+      yTemp <- (y - min(y)) / max(y)
+      yValues <- unique(yTemp)[order(unique(yTemp))]
+    }
+    else if(is.factor(y)){
+      yValues <- levels(y)
+      yTemp <- as.numeric(y) - 1
+    }
+    else if(is.logical(y)){
+      yTemp <- as.numeric(y)
+      yValues <- c(FALSE, TRUE)
+    }
+  }
+  else{
+    yTemp <- y
+    yValues <- c(0,1)
+  }
+
   X <- data.frame(x[!wy,])
   names(X) <- sapply(1:ncol(newdata), function(n){paste0("x", n)})
-  Y <- y[!wy]
+  Y <- as.numeric(yTemp)[!wy]
 
-  args = c(list(Y = Y, X = X, family = stats::binomial(), SL.library = SL.library),
+  args = c(list(Y = Y, X = X, family = stats::binomial(),
+                SL.library = SL.library),
            list(...))
   if(is.null(args$parallel)){
     args$parallel = "seq"
@@ -32,16 +57,19 @@ binarySuperLearner = function(y, x, wy, SL.library, ...){
   phat <- predict.SuperLearner(object = sl, newdata = newdata,
                                X = X, Y = Y, TRUE)$pred
   binaryImputations = stats::rbinom(length(phat[wy]), 1, phat[wy])
-  if(is.factor(Y)){
-    return(levels(Y)[binaryImputations + 1])
-  }
-  else if(is.logical(Y)){
-    return(c(FALSE, TRUE)[binaryImputations + 1])
-  }
-  else if(is.numeric(Y) | is.character(Y)){
-    return(sort(unique(Y))[binaryImputations + 1])
+  if(is.factor(y)){
+    return(factor(levels(y)[binaryImputations + 1], levels = levels(y)))
   }
   else{
-    return(unique(Y)[binaryImputations + 1])
+    return(yValues[binaryImputations + 1])
   }
+  # else if(is.logical(y)){
+  #   return(c(FALSE, TRUE)[binaryImputations + 1])
+  # }
+  # else if(is.numeric(y)){
+  #   return(sort(unique(y))[binaryImputations + 1])
+  # }
+  # else{
+  #   return(unique(Y)[binaryImputations + 1])
+  # }
 }
