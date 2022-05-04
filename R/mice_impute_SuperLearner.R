@@ -129,7 +129,7 @@ mice.impute.SuperLearner = function(y, ry, x, wy = NULL, SL.library,
   if(length(unique(y)) == 2){
     imps = binarySuperLearner(y, x, wy, SL.library, ...)
   }
-  else if(class(y) == "numeric"){
+  else if(inherits(y, c("numeric", "integer"))){
     imps = continuousSuperLearner(y, x, wy, SL.library, kernel = kernel,
                                    bw = bw, bw.update = bw.update, ...)
   }

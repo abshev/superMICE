@@ -11,17 +11,15 @@
 #' @return bandwidth
 
 jackknifeBandwidthSelection = function(i, bwGrid, preds, y, delta, kernel){
-  if(kernel == "gaussian"){
+  if(kernel[1] == "gaussian"){
     kernGrid = lapply(bwGrid, gaussianKernel, x = preds,
                         xcenter = preds[i], lambda = NULL)
   }
-
-  if(kernel == "uniform"){
+  else if(kernel[1] == "uniform"){
     kernGrid = lapply(bwGrid, uniformKernel, x = preds,
                         xcenter = preds[i], lambda = NULL)
   }
-
-  if(kernel == "triangular"){
+  else if(kernel[1] == "triangular"){
     kernGrid = lapply(bwGrid, triangularKernel, x = preds,
                         xcenter = preds[i], lambda = NULL)
   }

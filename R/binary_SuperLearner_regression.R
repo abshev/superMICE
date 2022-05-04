@@ -63,13 +63,4 @@ binarySuperLearner = function(y, x, wy, SL.library, ...){
   else{
     return(yValues[binaryImputations + 1])
   }
-  # else if(is.logical(y)){
-  #   return(c(FALSE, TRUE)[binaryImputations + 1])
-  # }
-  # else if(is.numeric(y)){
-  #   return(sort(unique(y))[binaryImputations + 1])
-  # }
-  # else{
-  #   return(unique(Y)[binaryImputations + 1])
-  # }
 }

@@ -40,11 +40,11 @@ continuousSuperLearner <- function(y, x, wy, SL.library, kernel, bw, bw.update, 
   sl.preds <- predict.SuperLearner(object = sl, newdata = newdata, X = X, Y = Y,
                                    TRUE)$pred
 
-  if(length(bw) == 1 & class(bw) == "numeric"){
+  if(length(bw) == 1 & inherits(bw, c("numeric", "integer"))){
     bw <- as.list(rep(bw, times = sum(wy)))
   }
   else if(!bw.update){
-    if(class(bw) == "numeric"){
+    if(inherits(bw, c("numeric", "integer"))){
         bw <- sapply((1:length(y))[wy], jackknifeBandwidthSelection,
                      bwGrid = bw,
                      preds = sl.preds,

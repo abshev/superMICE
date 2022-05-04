@@ -17,15 +17,15 @@
 localImputation <- function(i, preds, y, delta, bw = NULL,
                             kernel = c("gaussian", "uniform", "triangular")){
 
-  if(kernel == "gaussian"){
+  if(kernel[1] == "gaussian"){
     kernVals = gaussianKernel(x = preds, xcenter = preds[delta == 0][i],
                               bw = bw[[i]], lambda = NULL)
   }
-  else if(kernel == "uniform"){
+  else if(kernel[1] == "uniform"){
     kernVals = uniformKernel(x = preds, xcenter = preds[delta == 0][i],
                              bw = bw[[i]], lambda = NULL)
   }
-  else if(kernel == "triangular"){
+  else if(kernel[1] == "triangular"){
     kernVals = triangularKernel(x = preds, xcenter = preds[delta == 0][i],
                                 bw = bw[[i]], lambda = NULL)
   }
